@@ -1,0 +1,218 @@
+import React, { useState, useEffect } from 'react';
+import Sidebar from '../sidebar';
+import { Link } from 'react-router-dom';
+import Overview from '../../widgets/overview';
+import { deleteOurServices, fetchOurServices, updateOurServicesOnHomeStatus, updateOurServicesOnTopStatus, updateOurServicesStatus } from '../../../controllers/ourServices/services';
+
+
+const OurServices = () => {
+    const [services, setServices] = useState([]);
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [selectedDetail, setSelectedDetail] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = (services) => {
+        setSelectedDetail(services);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => setIsModalOpen(false);
+
+    useEffect(() => {
+       
+
+        loadOurServices();
+    }, []);
+    const loadOurServices = async () => {
+        try {
+            const OurServicesData = await fetchOurServices();
+            setServices(OurServicesData);
+        } catch (err) {
+            console.log('Failed to fetch data:', err);
+        }
+    };
+
+    const handleUpdateStatus = async (id, currentStatus) => {
+        try {
+            const result = await updateOurServicesStatus(id, currentStatus);
+            if (result.success) {
+                console.log('Our Services status updated successfully!');
+                // setServices(prevservices => 
+                //     prevservices.map(services =>
+                //         services.id === id ? { ...services, status: currentStatus } : services
+                //     )
+                // );
+                loadOurServices();
+            } else {
+                console.error('Error updating Our Services status:', result.message);
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    };
+
+    const handleUpdateOnHomeStatus = async (id, currentStatus) => {
+        try {
+            // Call the function to update status in the backend
+            await updateOurServicesOnHomeStatus(id, currentStatus);
+
+            // Update the local state with the new status
+            // setServices(prevservices => 
+            //     prevservices.map(services => 
+            //         services.id === id ? { ...services, on_home: currentStatus } : services
+            //     )
+            // );
+            loadOurServices();
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+    
+    const handleUpdateOnTopStatus = async (id, currentStatus) => {
+        try {
+            const result = await updateOurServicesOnTopStatus(id, currentStatus);
+            if (result.success) {
+                // console.log('Our Services On Top status updated successfully!');
+                // setServices(prevservices => 
+                //     prevservices.map(services =>
+                //         services.id === id ? { ...services, on_top: currentStatus } : services
+                //     )
+                // );
+                loadOurServices();
+            } else {
+                console.error('Error updating Our Services status:', result.message);
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    };
+
+    const handleDeleteService = async (id) => {
+        try {
+            const result = await deleteOurServices(id);
+            if (result.success) {
+                alert('Our Services deleted successfully');
+                setServices(prevservices => prevservices.filter(services => services.id !== id));
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error deleting Our Services:', error);
+            alert(`Error: ${error.message}`);
+        }
+    };
+
+    return (
+        <>
+       
+            <Sidebar />
+             
+                <div className="midde_cont">
+                    <div className="container-fluid">
+                        <div className="row column_title">
+                            <div className="col-md-12">
+                                <div className="page_title">
+                                    <h2>Our Services</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row column1">
+                            <div className="col-md-12">
+                                <div className="white_shd full margin_bottom_30">
+                                    <div className="full graph_head">
+                                        <Link to="/addOurServices/add" className="btn btn-success btn-xs mr-2">Add Our Services</Link>
+                                        <Link to="/metaDetails/service" className="btn btn-success btn-xs mr-2">Meta Details</Link>
+                                        <Link to="/bannerImage/service" className="btn btn-success btn-xs">Banner Image</Link>
+                                    </div>
+                                    <div className="full price_table padding_infor_info">
+                                        {loading && <div className="loading">Loading...</div>}
+                                        {error && <div className="alert alert-danger">{error}</div>}
+                                        <div className="table-responsive-sm">
+                                            <table id="subct" className="table table-striped projects">
+                                                <thead className="thead-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Heading</th>
+                                                        <th>Content</th>
+                                                        <th>On Home</th>
+                                                        <th>On Top </th>
+                                                        <th>Current Status</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {services.map((services, index) => (
+                                                        <tr key={services.id}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{services.heading}</td>
+                                                            <td><div>
+                                                                <button onClick={() => openModal(services)} className="btn btn-success btn-xs">
+                                                                    Overview
+                                                                </button>
+                                                            </div></td>
+                                                            <td>
+                                                                {services.on_home === 0 ? (
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 1)}>Deactivate</button>
+                                                                                ) : (
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 0)}>Activate</button>
+                                                                                )}
+                                                                </td>
+                                                            <td> {services.on_top === 0 ? (
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnTopStatus(services.id, 1)}>Deactivate</button>
+                                                                                ) : (
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnTopStatus(services.id, 0)}>Activate</button>
+                                                                                )}</td>
+
+                                                                                <td>
+                                                                        
+                                                                                {services.status === 0 ? (
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(services.id, 1)}>Deactivate</button>
+                                                                                ) : (
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(services.id, 0)}>Activate</button>
+                                                                                )}
+                                                                          
+                                                                    </td>
+                                                          
+                                                            <td>
+                                                                <ul className="list-inline d-flex justify-content-end">
+                                                                    
+                                                                    <li>
+                                                                        <Link to={`/addOurServices/${services.id}`} className="btn btn-primary btn-xs">
+                                                                            <i className="fa fa-edit"></i>
+                                                                        </Link>
+                                                                    </li>
+                                                                    <li>
+                                                                        <button
+                                                                            className="btn btn-danger btn-xs"
+                                                                            onClick={() => handleDeleteService(services.id)}
+                                                                        >
+                                                                            <i className="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Overview 
+                    isOpen={isModalOpen} 
+                    onClose={closeModal} 
+                    description={selectedDetail ? selectedDetail.description : ''} 
+                />
+       
+        
+        </>
+    );
+};
+
+export default OurServices;
