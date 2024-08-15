@@ -1,27 +1,24 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://localhost:1000/bannerImage';
 
-
-
-
-export const deleteHomeBanner = async (id) => {
+export const deleteBanner = async (id) => {
     try {
         const response = await axios.delete(`${API_URL}/delete/${id}`);
         return response.data;
     } catch (error) {
-        console.error('Error deleting home banner:', error);
+        console.error('Error deleting  banner:', error);
         throw error;
     }
 };
 
 
-export const fetchHomeBannerByID = async (id) => {
+export const fetchBannerByID = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/getByID/${id}`);
+        const response = await axios.get(`${API_URL}/getBanner/${id}`);
         return response.data.data;
     } catch (error) {
-        console.error('Error fetching home banner data:', error);
+        console.error('Error fetching  banner data:', error);
         throw error;
     }
 };

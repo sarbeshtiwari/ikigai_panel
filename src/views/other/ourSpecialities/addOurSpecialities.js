@@ -1,54 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../home/sidebar';
+import { fetchOurSpecialityByID, saveOurSpeciality } from '../../../controllers/ourSpecialities/ourSpecialities';
+// Import API functions if you have them
+// import { addSpeciality, updateSpeciality, fetchSpeciality } from '../api';
 
 export default function AddSpecialities() {
     const navigate = useNavigate();
-    const {id } = useParams();
+    const { id } = useParams();
 
     const [formData, setFormData] = useState({
-        meta_title: '',
-        meta_key: '',
-        meta_desc: '',
-        location_type: '',
-        location: '',
-        state: '',
-        priority: '',
-        ctcontent: '',
-        schema: '',
-        content_above_faqs: ''
+        heading: '',
+        content: '',
+        schema_data: '',
     });
 
     const [image, setImage] = useState(null);
 
     useEffect(() => {
         if (id !== 'add') {
-            // fetchCityDetails(ids, id)
-            //     .then(data => {
-            //         if (Array.isArray(data) && data.length > 0) {
-            //             const city = data[0];
-            //             const specificDataItem = city.data.find(item => item.location_type === id);
-            //             if (specificDataItem) {
-            //                 setFormData({
-            //                     meta_title: specificDataItem.metaTitle || '',
-            //                     meta_key: specificDataItem.metaKeyword || '',
-            //                     meta_desc: specificDataItem.metaDescription || '',
-            //                     location_type: specificDataItem.location_type || '',
-            //                     location: city.location || '',
-            //                     state: city.state || '',
-            //                     priority: city.priority || '',
-            //                     ctcontent: specificDataItem.ctcontent || '',
-            //                     schema: specificDataItem.schema || '',
-            //                     content_above_faqs: specificDataItem.content_above_faqs || ''
-            //                 });
-            //             } else {
-            //                 console.error('Specific data item not found');
-            //             }
-            //         } else {
-            //             console.error('City array is empty or not an array');
-            //         }
-            //     })
-            //     .catch(error => console.error(error));
+            // Fetch existing data if not adding a new speciality
+            // Example API call, adjust as needed
+            fetchOurSpecialityByID(id)
+                .then(data => {
+                    setFormData({
+                        heading: data.heading || '',
+                        content: data.content || '',
+                        schema_data: data.schema_data || '',
+                    });
+                })
+                .catch(error => console.error('Error fetching speciality:', error));
         }
     }, [id]);
 
@@ -65,48 +46,24 @@ export default function AddSpecialities() {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        const { meta_title, meta_key, meta_desc, location_type, location, state, priority, ctcontent, schema, content_above_faqs } = formData;
-    
-        // Prepare form data
-        const dataArray = [{
-            location_type: location_type,
-            metaTitle: meta_title || ' ',
-            metaKeyword: meta_key || ' ',
-            metaDescription: meta_desc || ' ',
-            ctcontent: ctcontent || ' ',
-            schema: schema || ' ',
-            content_above_faqs: content_above_faqs || ' ',
-            image: image ? image.name : ''  // Add image name or path if needed
-        }];
-    
+        const { heading, content, schema_data } = formData;
+
         const formDataToSend = new FormData();
-        formDataToSend.append('location', location);
-        formDataToSend.append('state', state);
-        formDataToSend.append('priority', priority || ' ');
-        formDataToSend.append('data', JSON.stringify(dataArray));
+        formDataToSend.append('heading', heading);
+        formDataToSend.append('content', content);
+        formDataToSend.append('schema_data', schema_data || ' ');
         if (image) {
             formDataToSend.append('image', image);
         }
-    
+
         try {
-            let result;
-            if (id === 'add') {
-                // result = await addCity(formDataToSend);
-            } else {
-                // result = await updateCity(ids, id, formDataToSend);
-            }
-    
-            // if (result.success) {
-                // alert('City saved successfully');
-                navigate(-1);
-            // } else {
-                // alert(`Failed to save City: ${result.message}`);
-            // }
+            await saveOurSpeciality(id, formDataToSend);
+            alert('Meta info saved successfully');
+            navigate(-1);
         } catch (error) {
             console.error('Error submitting form:', error);
         }
     };
-    
 
     return (
         <>
@@ -127,54 +84,64 @@ export default function AddSpecialities() {
                                 <div className="col-md-12">
                                     <div className="white_shd full margin_bottom_30">
                                         <div className="full graph_head">
-                                        <button 
-                                    className="btn btn-primary btn-xs float-right"
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Back
-                                </button>
+                                            <button
+                                                className="btn btn-primary btn-xs float-right"
+                                                onClick={() => navigate(-1)}
+                                            >
+                                                Back
+                                            </button>
                                         </div>
                                         <div className="full price_table padding_infor_info">
-                                            <form onSubmit={handleFormSubmit} id="citiesform" encType="multipart/form-data">
+                                            <form onSubmit={handleFormSubmit} id="specialitiesForm" encType="multipart/form-data">
                                                 <span className="status text-danger mb-0"></span>
                                                 <div className="form-row mb-3">
                                                     <div className="col-md-6 form-group">
-                                                        <label className="label_field">Meta Title</label>
-                                                        <input type="text" name="meta_title" id="meta_title" value={formData.meta_title} onChange={handleInputChange} className="form-control" />
-                                                    </div>
-                                                    <div className="col-md-6 form-group">
-                                                        <label className="label_field">Meta Keywords</label>
-                                                        <input type="text" name="meta_key" id="meta_key" value={formData.meta_key} onChange={handleInputChange} className="form-control" />
-                                                    </div>
-                                                    <div className="col-md-12 form-group">
-                                                        <label className="label_field">Meta Description</label>
-                                                        <textarea name="meta_desc" id="meta_desc" value={formData.meta_desc} onChange={handleInputChange} className="form-control" rows="5"></textarea>
-                                                    </div>
-                                                    
-                                                    <div className="col-md-6 form-group">
                                                         <label className="label_field">Heading</label>
-                                                        <input type="text" name="location" id="location" value={formData.location} onChange={handleInputChange} className="form-control" />
+                                                        <input
+                                                            type="text"
+                                                            name="heading"
+                                                            id="heading"
+                                                            value={formData.heading}
+                                                            onChange={handleInputChange}
+                                                            className="form-control"
+                                                        />
                                                     </div>
-                                                   
-                                                   
+
                                                     <div className="col-md-6 form-group">
                                                         <label className="label_field">Image</label>
-                                                        <input type="file" name="image" id="image" onChange={handleFileChange} className="form-control" />
+                                                        <input
+                                                            type="file"
+                                                            name="image"
+                                                            id="image"
+                                                            onChange={handleFileChange}
+                                                            className="form-control"
+                                                        />
                                                     </div>
                                                     <div className="col-md-12 form-group">
                                                         <label className="label_field">Content</label>
-                                                        <textarea name="ctcontent" id="ctcontent" value={formData.ctcontent} onChange={handleInputChange} className="form-control" rows="5"></textarea>
+                                                        <textarea
+                                                            name="content"
+                                                            id="content"
+                                                            value={formData.content}
+                                                            onChange={handleInputChange}
+                                                            className="form-control"
+                                                            rows="5"
+                                                        ></textarea>
                                                     </div>
                                                     <div className="col-md-12 form-group">
                                                         <label className="label_field">Schema</label>
-                                                        <textarea name="schema" id="schema" value={formData.schema} onChange={handleInputChange} className="form-control" rows="5"></textarea>
+                                                        <textarea
+                                                            name="schema_data"
+                                                            id="schema_data"
+                                                            value={formData.schema_data}
+                                                            onChange={handleInputChange}
+                                                            className="form-control"
+                                                            rows="5"
+                                                        ></textarea>
                                                     </div>
-                                                    
                                                 </div>
 
                                                 <div className="form-group margin_0">
-                                                    <input type="hidden" name="addcities" id="addcities" value="active" />
-                                                    <input type="hidden" name="ct_id" id="ct_id" value="" />
                                                     <button className="main_bt" type="submit">Submit</button>
                                                 </div>
                                                 <span id="result" className="text-danger mt-4 d-block"></span>

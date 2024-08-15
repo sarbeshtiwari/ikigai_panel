@@ -1,43 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Sidebar from '../sidebar';
+import { deleteFaq, fetchFaq, updateFaqStatus } from '../../../controllers/faq/faq';
 
 export default function FAQ() {
     const [faq, setFAQ] = useState([]);
 
-    const { id } = useParams();
-
     useEffect(() => {
-        // if (id === 'add') {
-        //     fetchFAQsData( id);
-        // }
-    }, [ id]);
+        
+            fetchFAQsData();
+       
+    }, []);
 
-    // const fetchFAQsData = async ( id) => {
-    //     try {
-    //         const faqs = await fetchFAQs( id);
-    //         setFAQ(faqs);
-    //     } catch (error) {
-    //         console.error('Error fetching FAQs:', error);
-    //     }
-    // };
+    const fetchFAQsData = async () => {
+        try {
+            const faqs = await fetchFaq();
+            setFAQ(faqs);
+        } catch (error) {
+            console.error('Error fetching FAQs:', error);
+        }
+    };
 
     const handleUpdateStatus = async (id, status) => {
-        // try {
-        //     await updateFAQStatus(id, status);
-        //     fetchFAQsData( id);  // Refresh FAQs after update
-        // } catch (error) {
-        //     console.error('Error updating FAQ status:', error);
-        // }
+        try {
+            await updateFaqStatus(id, status);
+            fetchFAQsData();  // Refresh FAQs after update
+        } catch (error) {
+            console.error('Error updating FAQ status:', error);
+        }
     };
 
     const handleDeleteFAQ = async (id) => {
-        // try {
-        //     await deleteFAQ(id);
-        //     fetchFAQsData( id);  // Refresh FAQs after delete
-        // } catch (error) {
-        //     console.error('Error deleting FAQ:', error);
-        // }
+        try {
+            await deleteFaq(id);
+            fetchFAQsData();  // Refresh FAQs after delete
+        } catch (error) {
+            console.error('Error deleting FAQ:', error);
+        }
     };
 
     return (
@@ -70,6 +69,7 @@ export default function FAQ() {
                                                         <th>No</th>
                                                         <th>Question</th>
                                                         <th>Answers</th>
+                                                        <th>Current Status</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -80,16 +80,17 @@ export default function FAQ() {
                                                             <td>{item.faqQuestion}</td>
                                                             <td>{item.faqAnswer}</td>
                                                             <td>
-                                                                <ul className="list-inline d-flex justify-content-end">
-                                                                    <li>
-                                                                        {item.status === false ? (
-                                                                            <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(item._id, true)}>Deactive</button>
+                                                            {item.status === 0 ? (
+                                                                            <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(item.id, 1)}>Deactive</button>
                                                                         ) : (
-                                                                            <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(item._id, false)}>Active</button>
+                                                                            <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(item.id, 0)}>Active</button>
                                                                         )}
-                                                                    </li>
+                                                            </td>
+                                                            <td>
+                                                                <ul className="list-inline d-flex justify-content-end">
+                                                                    
                                                                     <li>
-                                                                        <Link to={`/addFAQ/${item._id}`} className="btn btn-primary btn-xs">
+                                                                        <Link to={`/addFAQ/${item.id}`} className="btn btn-primary btn-xs">
                                                                             <i className="fa fa-edit"></i>
                                                                         </Link>
                                                                     </li>
@@ -98,7 +99,7 @@ export default function FAQ() {
                                                                             className="btn btn-danger btn-xs"
                                                                             onClick={() => {
                                                                                 if (window.confirm('Are you sure you want to delete this FAQ?')) {
-                                                                                    handleDeleteFAQ(item._id);
+                                                                                    handleDeleteFAQ(item.id);
                                                                                 }
                                                                             }}
                                                                         >

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AddFAQ = () => {
     const { id } = useParams();
@@ -10,28 +10,38 @@ const AddFAQ = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // if (id !== 'add') {
-        //     fetchFAQData(id);
-        // }
+        if (id !== 'add') {
+            fetchFAQData(id);
+        }
     }, [id]);
 
-    const fetchFAQData = async (faqId) => {
-        // try {
-        //     const data = await fetchFAQ(faqId);
-        //     if (data.length === 0) {
-        //         setHeadings([{  faqQuestion: '', faqAnswer: ''}]);
-        //     } else {
-        //         setFaqType(data[0].faqType || '');
-        //         setHeadings(data);
-        //     }
-        // } catch (error) {
-        //     console.error('Error fetching FAQ:', error);
-        //     setHeadings([{ faqQuestion: '', faqAnswer: ''}]);
-        // }
+    const fetchFAQData = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:1000/faq/getFaqById/${id}`);
+            const data = response.data;
+    
+            // Check if the API response was successful
+            if (data.success && data.data) {
+                // If data is an object, convert it into an array with a single object
+                setHeadings([data.data]);
+            } else {
+                // Handle unexpected data format or error
+                console.error('Unexpected data format:', data);
+                setHeadings([{ faqQuestion: '', faqAnswer: '' }]);
+            }
+        } catch (error) {
+            console.error('Error fetching FAQ:', error);
+            setHeadings([{ faqQuestion: '', faqAnswer: '' }]);
+        }
     };
+    
+    
+    
+    
+    
 
     const addMoreFields = () => {
-        setHeadings([...headings, { faqQuestion: '', faqAnswer: ''}]);
+        setHeadings([...headings, { faqQuestion: '', faqAnswer: '' }]);
     };
 
     const removeField = (index) => {
@@ -52,36 +62,24 @@ const AddFAQ = () => {
         setHeadings(updatedHeadings);
     };
 
-    // const handleFaqTypeChange = (e) => {
-    //     const { value } = e.target;
-    //     setFaqType(value);
-    //     const updatedHeadings = headings.map(heading => ({
-    //         ...heading,
-    //         faqType: value
-    //     }));
-    //     setHeadings(updatedHeadings);
-    // };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log('Submitting data:', headings);
+        const dataToSend = id !== 'add' ? headings[0] : headings;
         try {
-            let response;
-            if (id !== 'add') {
-                // response = await updateFAQ(id, headings);
+            const apiEndpoint = id !== 'add' ? `http://localhost:1000/faq/updateFaq/${id}` : 'http://localhost:1000/faq/addFaq';
+            const method = id !== 'add' ? 'put' : 'post';
+            const response = await axios({
+                method,
+                url: apiEndpoint,
+                data: dataToSend
+            });
+            if (response.status === 200 || response.status === 201) {
+                alert('Data saved successfully');
+                navigate(-1);
             } else {
-                // response = await addFAQ(headings);
+                alert(`Failed to save data: ${response.data.message}`);
             }
-            // if (response && response.data) {
-                // const result = response.data;
-                // if (result.success) {
-                    // alert('Data saved successfully');
-                    navigate(-1);
-                // } else {
-                    // alert(`Failed to save data: ${result.message}`);
-                // }
-            // } else {
-                // throw new Error('No response data');
-            // }
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while saving data. Please check the console for more details.');
@@ -106,45 +104,19 @@ const AddFAQ = () => {
                             <div className="col-md-12">
                                 <div className="white_shd full margin_bottom_30">
                                     <div className="full graph_head">
-                                    <button 
-                                    className="btn btn-primary btn-xs float-right"
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Back
-                                </button>
+                                        <button
+                                            className="btn btn-primary btn-xs float-right"
+                                            onClick={() => navigate(-1)}
+                                        >
+                                            Back
+                                        </button>
                                     </div>
                                     <div className="full price_table padding_infor_info">
                                         <span className="status text-danger"></span>
                                         <form onSubmit={handleSubmit} id="gallerImage" encType="multipart/form-data">
-                                            {/* <div className="form-row">
-                                                <div className="col-md-12 form-group">
-                                                    <label className="label_field">FAQs Type</label>
-                                                    <select
-                                                        name="faqType"
-                                                        value={faqType}
-                                                        onChange={handleFaqTypeChange}
-                                                        className="form-control"
-                                                    >
-                                                        <option value="">Select Type</option>
-                                                        <option value="residential">Residential</option>
-                                                        <option value="flat">Flat</option>
-                                                        <option value="New">New</option>
-                                                        <option value="apartment">Apartment</option>
-                                                        <option value="commercial">Commercial</option>
-                                                        <option value="studio">Studio</option>
-                                                    </select>
-                                                </div>
-                                            </div> */}
                                             <div className="more_fields_container">
                                                 {headings.map((heading, index) => (
                                                     <div className="clone_fields" key={index}>
-                                                        <div className="col-md-6 form-group remove">
-                                                            {headings.length > 1 && (
-                                                                <span onClick={() => removeField(index)}>
-                                                                    <i className="fa fa-times red_color" aria-hidden="true"></i>
-                                                                </span>
-                                                            )}
-                                                        </div>
                                                         <div className="form-row">
                                                             <div className="col-md-6 form-group">
                                                                 <label className="label_field">Question</label>
@@ -167,13 +139,30 @@ const AddFAQ = () => {
                                                                 />
                                                             </div>
                                                         </div>
+                                                        {headings.length > 1 && (
+                                                            <div className="col-md-12 mt-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-danger"
+                                                                    onClick={() => removeField(index)}
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
-                                            <span onClick={addMoreFields} className="col-md-12 form-group add-more-link">Add More</span>
+                                            {id === 'add' ? (<button
+                                                type="button"
+                                                className="btn btn-primary mb-3 mt-3"
+                                                onClick={addMoreFields}
+                                            >
+                                                Add More
+                                            </button>): ('')}
+                                            
                                             <div className="form-group margin_0">
-                                                
-                                                <button type="submit" className="main_bt">Submit</button>
+                                                <button type="submit" className="main_bt mt-2">Submit</button>
                                             </div>
                                             <span id="result" className="text-danger mt-4 d-block"></span>
                                         </form>
