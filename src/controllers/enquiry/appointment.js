@@ -1,0 +1,46 @@
+import axios from 'axios';
+
+const API_URL = 'https://ikigai-panel-api.onrender.com/appointment';
+
+export const fetchAppointment = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/get`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching About Us data:', error);
+        throw error;
+    }
+};
+
+export const deleteAppointment = async (id) => {
+    try {
+        const response = await axios.delete(`${API_URL}/delete/${id}`);
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting About Us:', error);
+        throw error;
+    }
+};
+
+export const saveAppointment = async (id, note) => {
+    try {
+        console.log(note)
+        const url =  `${API_URL}/update/${id}`;
+        const method =  'PUT';
+        const response = await axios({
+            method,
+            url,
+            headers: {
+                'Content-Type': 'application/json' // Make sure to set the correct content type
+            },
+            data: JSON.stringify({ note })
+        });
+        
+
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        throw error;
+    }
+};

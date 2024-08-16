@@ -6,7 +6,8 @@ import axios from 'axios';
 const AddFAQ = () => {
     const { id } = useParams();
     const [faqType, setFaqType] = useState('');
-    const [headings, setHeadings] = useState([{ faqQuestion: '', faqAnswer: ''}]);
+    const [headings, setHeadings] = useState([{ faqQuestion: '', faqAnswer: '' }]);
+    const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,15 +18,12 @@ const AddFAQ = () => {
 
     const fetchFAQData = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:1000/faq/getFaqById/${id}`);
+            const response = await axios.get(`https://ikigai-panel-api.onrender.com/faq/getFaqById/${id}`);
             const data = response.data;
     
-            // Check if the API response was successful
             if (data.success && data.data) {
-                // If data is an object, convert it into an array with a single object
                 setHeadings([data.data]);
             } else {
-                // Handle unexpected data format or error
                 console.error('Unexpected data format:', data);
                 setHeadings([{ faqQuestion: '', faqAnswer: '' }]);
             }
@@ -34,11 +32,6 @@ const AddFAQ = () => {
             setHeadings([{ faqQuestion: '', faqAnswer: '' }]);
         }
     };
-    
-    
-    
-    
-    
 
     const addMoreFields = () => {
         setHeadings([...headings, { faqQuestion: '', faqAnswer: '' }]);
@@ -62,12 +55,31 @@ const AddFAQ = () => {
         setHeadings(updatedHeadings);
     };
 
+    const validateForm = () => {
+        const errors = {};
+        headings.forEach((heading, index) => {
+            if (!heading.faqQuestion.trim()) {
+                errors[`faqQuestion${index}`] = 'Question is required';
+            }
+            if (!heading.faqAnswer.trim()) {
+                errors[`faqAnswer${index}`] = 'Answer is required';
+            }
+        });
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+        
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
+
         console.log('Submitting data:', headings);
         const dataToSend = id !== 'add' ? headings[0] : headings;
         try {
-            const apiEndpoint = id !== 'add' ? `http://localhost:1000/faq/updateFaq/${id}` : 'http://localhost:1000/faq/addFaq';
+            const apiEndpoint = id !== 'add' ? `https://ikigai-panel-api.onrender.com/faq/updateFaq/${id}` : 'https://ikigai-panel-api.onrender.com/faq/addFaq';
             const method = id !== 'add' ? 'put' : 'post';
             const response = await axios({
                 method,
@@ -127,6 +139,9 @@ const AddFAQ = () => {
                                                                     onChange={(e) => handleInputChange(e, index)}
                                                                     className="form-control"
                                                                 />
+                                                                {validationErrors[`faqQuestion${index}`] && (
+                                                                    <div className="text-danger">{validationErrors[`faqQuestion${index}`]}</div>
+                                                                )}
                                                             </div>
                                                             <div className="col-md-6 form-group">
                                                                 <label className="label_field">Answer</label>
@@ -137,6 +152,9 @@ const AddFAQ = () => {
                                                                     onChange={(e) => handleInputChange(e, index)}
                                                                     className="form-control"
                                                                 />
+                                                                {validationErrors[`faqAnswer${index}`] && (
+                                                                    <div className="text-danger">{validationErrors[`faqAnswer${index}`]}</div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                         {headings.length > 1 && (
@@ -153,13 +171,15 @@ const AddFAQ = () => {
                                                     </div>
                                                 ))}
                                             </div>
-                                            {id === 'add' ? (<button
-                                                type="button"
-                                                className="btn btn-primary mb-3 mt-3"
-                                                onClick={addMoreFields}
-                                            >
-                                                Add More
-                                            </button>): ('')}
+                                            {id === 'add' ? (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary mb-3 mt-3"
+                                                    onClick={addMoreFields}
+                                                >
+                                                    Add More
+                                                </button>
+                                            ) : ('')}
                                             
                                             <div className="form-group margin_0">
                                                 <button type="submit" className="main_bt mt-2">Submit</button>

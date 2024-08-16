@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:1000/meta';
+const API_URL = 'https://ikigai-panel-api.onrender.com/meta';
 
 export const saveMetaDetails = async (id, formDataToSend) => {
     try {

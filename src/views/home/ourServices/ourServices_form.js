@@ -4,7 +4,6 @@ import { fetchOurServicesByID, saveOurServices } from '../../../controllers/ourS
 
 const useServicesForm = (id) => {
     const [formData, setFormData] = useState({
-     
         heading: '',
         home_data: '',
         description: ''
@@ -14,6 +13,7 @@ const useServicesForm = (id) => {
     const [image, setImage] = useState(null);
     const [homeImage, setHomeImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +23,6 @@ const useServicesForm = (id) => {
                     // Set form data and editorHtml
                     setFormData(prevData => ({
                         ...prevData,
-                       
                         heading: data.heading,
                         home_data: data.home_data,
                         description: data.description
@@ -42,9 +41,9 @@ const useServicesForm = (id) => {
         if (type === 'file') {
             const file = files[0];
             if (name === 'image') {
-                setImage(files[0]);
+                setImage(file);
             } else if (name === 'home_image') {
-                setHomeImage(files[0]);
+                setHomeImage(file);
             }
         } else {
             setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -56,11 +55,29 @@ const useServicesForm = (id) => {
         setFormData(prevData => ({ ...prevData, description: value }));
     };
 
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.heading.trim()) {
+            errors.heading = 'Heading is required';
+        }
+        if (!formData.home_data.trim()) {
+            errors.home_data = 'Home data is required';
+        }
+        if (!editorHtml.trim()) {
+            errors.description = 'Description is required';
+        }
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return; // Stop submission if validation fails
+        }
+
         const formDataToSend = new FormData();
-      
         formDataToSend.append('heading', formData.heading || ' ');
         formDataToSend.append('home_data', formData.home_data || ' ');
         formDataToSend.append('description', editorHtml);
@@ -72,7 +89,6 @@ const useServicesForm = (id) => {
         }
         setLoading(true);
         try {
-            
             await saveOurServices(id, formDataToSend);
             alert('Meta info saved successfully');
             navigate(-1);
@@ -88,10 +104,10 @@ const useServicesForm = (id) => {
         editorHtml,
         statusMessage,
         loading,
+        validationErrors,
         handleInputChange,
         handleEditorChange,
         handleSubmit,
-        
     };
 };
 

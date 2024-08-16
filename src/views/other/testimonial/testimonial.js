@@ -2,44 +2,110 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../home/sidebar';
 import { Link } from 'react-router-dom';
 import image from '../../../assets/images/logo.png';
+import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
+import { deleteTestimonials, fetchTestimonials, updateTestimonialsStatus } from '../../../controllers/testimonials/testimonials';
+import { globals } from '../../../controllers/home_banner/home_banner';
+
 
 export default function Testimonial() {
     const [testimonial, setTestimonial] = useState([]);
+    const [bannerImage, setBannerImage] = useState([]);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // const loadTestimonial = async () => {
-        //     try {
-        //         const specialitieData = await fetchTestimonial();
-        //         setTestimonial(specialitieData);
-        //     } catch (err) {
-        //         console.log('Failed to fetch data');
-        //     }
-        // };
+        const loadData = async () => {
 
-        // loadTestimonial();
-    }, []);
-
-    const handleUpdateStatus = async (id, status) => {
-        // try {
-        //     const response = await updateTestimonialtatus(id, status);
-        //     if (response.success) {
-        //         console.log('specialitie status updated successfully!');
-        //         setTestimonial(prevTestimonial => prevTestimonial.map(specialitie => specialitie._id === id ? { ...specialitie, status } : specialitie));
-        //     } else {
-        //         console.error('Error updating specialitie status:', response.message);
-        //     }
-        // } catch (error) {
-        //     console.error('Unexpected error:', error);
-        // }
+        await loadTestimonial();
+        await loadBannerImage('testimonial');
     };
 
-    const handleDeletespecialitie = async (id, image) => {
-        // try {
-        //     await deletespecialitie(id, image);
-        //     setTestimonial(prevTestimonial => prevTestimonial.filter(specialitie => specialitie._id !== id));
-        // } catch (error) {
-        //     console.error('Error deleting specialitie:', error);
-        // }
+    loadData();
+    }, []);
+
+     const loadTestimonial = async () => {
+            try {setLoading(true);
+                const TestimonialData = await fetchTestimonials();
+                console.log(TestimonialData.data)
+                setTestimonial(TestimonialData.data);
+            } catch (err) {
+                console.log('Failed to fetch data');
+                setError('Failed to load data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        const loadBannerImage = async () => {
+            try { setLoading(true);
+                const bannerData = await fetchBannerByID('testimonial');
+                // console.log('Type of bannerData:', typeof bannerData);
+                // console.log('Content of bannerData:', bannerData);
+                
+                // // Wrap the object in an array
+                // const bannerDataArray = [bannerData];
+                // console.log('Wrapped bannerData in an array:', bannerDataArray);
+               
+                
+                setBannerImage(bannerData);
+            } catch (err) {
+                console.log('Failed to fetch Banner Image data:', err);
+                setError('Failed to fetch Banner Image data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const handleUpdateBannerStatus = async (id, currentStatus) => {
+            try {
+                const result = await updateBannerStatus(id, currentStatus);
+                if (result.success) {
+                    console.log('Banner status updated successfully!');
+                    loadBannerImage();
+                } else {
+                    console.error('Error updating Banner status:', result.message);
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+            }
+        };
+    
+        const handleDeleteBanner = async (id) => {
+            try {
+                const result = await deleteBanner(id);
+                if (result.success) {
+                    alert('Banner deleted successfully');
+                    loadBannerImage();
+                    // setAbouts(prevAbouts => prevAbouts.filter(about => about.id !== id));
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error deleting Banner:', error);
+                alert(`Error: ${error.message}`);
+            }
+        };
+
+    const handleUpdateStatus = async (id, status) => {
+        try {
+            const response = await updateTestimonialsStatus(id, status);
+            if (response.success) {
+                console.log('Testimonial status updated successfully!');
+                loadTestimonial();
+            } else {
+                console.error('Error updating Testimonial status:', response.message);
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    };
+
+    const handleDeleteTestimonial = async (id) => {
+        try {
+            await deleteTestimonials(id);
+            setTestimonial(prevTestimonial => prevTestimonial.filter(Testimonial => Testimonial.id !== id));
+        } catch (error) {
+            console.error('Error deleting Testimonial:', error);
+        }
     };
 
     return (
@@ -59,10 +125,95 @@ export default function Testimonial() {
                             <div className="col-md-12">
                                 <div className="white_shd full margin_bottom_30">
                                     <div className="full graph_head">
-                                        <Link to="/addTestimonial/add" className="btn btn-success btn-xs">Add Testimonial</Link>
-                                        <Link to="" className="btn btn-primary btn-xs float-right">Back</Link>
+                                        <Link to="/addTestimonial/add" className="btn btn-success btn-xs mr-2">Add Testimonial</Link>
+                                        <Link to="/metaDetails/testimonial" className="btn btn-success btn-xs mr-2">Meta Details</Link>
+                                        <Link to="/bannerImage/testimonial" className="btn btn-success btn-xs">Banner Image</Link>
                                     </div>
                                     <div className="full price_table padding_infor_info">
+                                    {loading && <div className="loading">Loading...</div>}
+                                    {error && <div className="alert alert-danger">{error}</div>}
+                                    {bannerImage.length > 0 ? (
+                                        <>
+                                        <h2 className="mt-4 mb-4">Banner Images</h2>
+                                        <div className="table-responsive-sm">
+                                            <table id="subct" className="table table-striped projects">
+                                                <thead className="thead-dark">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Image Desktop</th>
+                                                        <th>Image Tablet</th>
+                                                        <th>Image Mobile</th>
+                                                        <th>Current Status</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {bannerImage.map((banner, index) => (
+                                                        <tr key={banner.id}>
+                                                            <td>{index + 1}</td>
+                                                            <td>
+                                                                <img
+                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <img
+                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <img
+                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                {banner.status === 0 ? (
+                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
+                                                                ) : (
+                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
+                                                                )}
+                                                            </td>
+                                                            <td>
+                                                                <ul className="list-inline d-flex justify-content-center">
+                                                                    <li>
+                                                                        <button
+                                                                            className="btn btn-danger btn-xs"
+                                                                            onClick={() => {
+                                                                                if (window.confirm('Are you sure you want to delete this banner image?')) {
+                                                                                    handleDeleteBanner(banner.id);
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <i className="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div> 
+                                        
+                                        </>
+                                    ): ('')}
+                                    
+                                        <h2 className="mt-4 mb-4">Testimonial Data</h2>
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="table-responsive-sm">
@@ -70,46 +221,59 @@ export default function Testimonial() {
                                                         <thead className="thead-dark">
                                                             <tr>
                                                                 <th>No</th>
-                                                                <th>Name</th>
                                                                 <th>Image</th>
-                                                                <th>Content</th>
+                                                                <th>Alt Tag</th>
+                                                                <th>Video</th>
+                                                                <th>Current Status</th>
                                                                 <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {testimonial.map((specialitie, index) => (
-                                                                <tr key={specialitie._id}>
+                                                            {testimonial.map((Testimonial, index) => (
+                                                                <tr key={Testimonial.id}>
                                                                     <td>{index + 1}</td>
-                                                                    <td>{specialitie.name}</td>
+                                                                  
                                                                     <td>
                                                                         <img 
-                                                                            src={specialitie.testimonialImage ? `https://star-estate-api.onrender.com/uploads/testimonial/${specialitie.testimonialImage}` : image} 
+                                                                            src={Testimonial.image_path ? `${globals}/uploads/testimonials/${Testimonial.image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
-                                                                            alt={specialitie.testimonialImage} 
+                                                                            alt={Testimonial.image_path} 
                                                                             width="50" 
                                                                             height="50" 
                                                                         />
                                                                     </td>
-                                                                    <td>{specialitie.content.slice(0, 20)}</td>
+                                                                    <td>{Testimonial.alt_tag}</td>
+                                                                    <td>
+                                                                        {Testimonial.video_path ? (
+                                                                            <a
+                                                                                href={`${globals}/uploads/testimonials/${Testimonial.video_path}`}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                Watch Video
+                                                                            </a>
+                                                                        ) : (
+                                                                            'No Video'
+                                                                        )}
+                                                                    </td>
+                                                                    <td>{Testimonial.status === 0 ? (
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(Testimonial.id, 1)}>Deactive</button>
+                                                                                ) : (
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(Testimonial.id, 0)}>Active</button>
+                                                                                )}</td>
                                                                     <td>
                                                                         <ul className="list-inline d-flex justify-content-end">
+                                                                            
                                                                             <li>
-                                                                                {specialitie.status === false ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(specialitie._id, true)}>Deactive</button>
-                                                                                ) : (
-                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(specialitie._id, false)}>Active</button>
-                                                                                )}
-                                                                            </li>
-                                                                            <li>
-                                                                                <Link to={`/addTestimonial/${specialitie._id}`} className="btn btn-primary btn-xs"><i className="fa fa-edit"></i></Link>
+                                                                                <Link to={`/addTestimonial/${Testimonial.id}`} className="btn btn-primary btn-xs"><i className="fa fa-edit"></i></Link>
                                                                             </li>
                                                                             <li>
                                                                                 <button
                                                                                     className="btn btn-danger btn-xs"
                                                                                     onClick={() => {
-                                                                                        if (window.confirm('Are you sure you want to delete this specialitie?')) {
-                                                                                            handleDeletespecialitie(specialitie._id, specialitie.testimonialImage);
+                                                                                        if (window.confirm('Are you sure you want to delete this Testimonial?')) {
+                                                                                            handleDeleteTestimonial(Testimonial.id);
                                                                                         }
                                                                                     }}
                                                                                 >

@@ -21,7 +21,6 @@ const useAboutForm = (id) => {
                     // Set form data and editorHtml
                     setFormData(prevData => ({
                         ...prevData,
-                        
                         heading: data.heading,
                         description: data.description
                     }));
@@ -45,7 +44,6 @@ const useAboutForm = (id) => {
         }
     };
     
-
     const handleEditorChange = (value) => {
         setEditorHtml(value);
         setFormData(prevData => ({
@@ -54,9 +52,22 @@ const useAboutForm = (id) => {
         }));
     };
     
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validation
+        if (!formData.heading.trim()) {
+            setStatusMessage('Heading cannot be empty.');
+            return;
+        }
+        if (!editorHtml.trim()) {
+            setStatusMessage('Description cannot be empty.');
+            return;
+        }
+        if (!image) {
+            setStatusMessage('Image cannot be empty.');
+            return;
+        }
 
         const formDataToSend = new FormData();
        
@@ -68,7 +79,6 @@ const useAboutForm = (id) => {
         setLoading(true);
 
         try {
-            
             await saveAboutUs(id, formDataToSend);
             alert('About saved successfully');
             navigate(-1);

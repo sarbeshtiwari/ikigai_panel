@@ -3,7 +3,8 @@ import Sidebar from '../sidebar';
 import { Link } from 'react-router-dom';
 import Overview from '../../widgets/overview';
 import { deleteAboutUs, fetchAboutUs, updateAboutUsOnHomeStatus, updateAboutUsOnTopStatus, updateAboutUsStatus } from '../../../controllers/about/about';
-import { fetchBannerByID } from '../../../controllers/bannerImage/bannerImage';
+import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
+import { globals } from '../../../controllers/home_banner/home_banner';
 
 const AboutUs = () => {
     const [abouts, setAbouts] = useState([]);
@@ -51,13 +52,21 @@ const AboutUs = () => {
     const loadBannerImage = async () => {
         try {
             const bannerData = await fetchBannerByID('about');
-            console.log(bannerData.data)
-            setBannerImage(bannerData || []);
+            // console.log('Type of bannerData:', typeof bannerData);
+            // console.log('Content of bannerData:', bannerData);
+            
+            // // Wrap the object in an array
+            // const bannerDataArray = [bannerData];
+            // console.log('Wrapped bannerData in an array:', bannerDataArray);
+            
+            setBannerImage(bannerData);
         } catch (err) {
             console.log('Failed to fetch Banner Image data:', err);
             setError('Failed to fetch Banner Image data');
         }
     };
+    
+    
 
     const handleUpdateStatus = async (id, currentStatus) => {
         try {
@@ -74,7 +83,33 @@ const AboutUs = () => {
     };
 
     const handleUpdateBannerStatus = async (id, currentStatus) => {
-        // Implement banner status update logic if necessary
+        try {
+            const result = await updateBannerStatus(id, currentStatus);
+            if (result.success) {
+                console.log('Banner status updated successfully!');
+                loadBannerImage();
+            } else {
+                console.error('Error updating Banner status:', result.message);
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
+    };
+
+    const handleDeleteBanner = async (id) => {
+        try {
+            const result = await deleteBanner(id);
+            if (result.success) {
+                alert('Banner deleted successfully');
+                loadBannerImage();
+                // setAbouts(prevAbouts => prevAbouts.filter(about => about.id !== id));
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error deleting Banner:', error);
+            alert(`Error: ${error.message}`);
+        }
     };
 
     const handleUpdateOnHomeStatus = async (id, currentStatus) => {
@@ -138,7 +173,8 @@ const AboutUs = () => {
                                     {loading && <div className="loading">Loading...</div>}
                                     {error && <div className="alert alert-danger">{error}</div>}
                                     {bannerImage.length > 0 ? (
-                                        
+                                        <>
+                                        <h2 className="mt-4 mb-4">Banner Images</h2>
                                         <div className="table-responsive-sm">
                                             <table id="subct" className="table table-striped projects">
                                                 <thead className="thead-dark">
@@ -157,7 +193,7 @@ const AboutUs = () => {
                                                             <td>{index + 1}</td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.desktop_image_path ? `http://localhost:2000/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
@@ -167,7 +203,7 @@ const AboutUs = () => {
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.tablet_image_path ? `http://localhost:2000/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
@@ -177,7 +213,7 @@ const AboutUs = () => {
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.mobile_image_path ? `http://localhost:2000/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
@@ -199,7 +235,7 @@ const AboutUs = () => {
                                                                             className="btn btn-danger btn-xs"
                                                                             onClick={() => {
                                                                                 if (window.confirm('Are you sure you want to delete this banner image?')) {
-                                                                                    handleDeleteAbout(banner.id);
+                                                                                    handleDeleteBanner(banner.id);
                                                                                 }
                                                                             }}
                                                                         >
@@ -212,8 +248,13 @@ const AboutUs = () => {
                                                     ))}
                                                 </tbody>
                                             </table>
-                                        </div>
+                                        </div> 
+                                        
+                                        </>
                                     ): ('')}
+                                    
+                                        <h2 className="mt-4 mb-4">About Us Data</h2>
+                                    
                                     <div className="table-responsive-sm">
                                         <table id="subct" className="table table-striped projects">
                                             <thead className="thead-dark">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../sidebar';
 import { fetchBlogsByID, saveBlogs } from '../../../controllers/blog/blog';
 
@@ -8,13 +8,11 @@ export default function AddBlogs() {
     const { id } = useParams();
 
     const [formData, setFormData] = useState({
-       
         blogName: '',
         blogBy: '',
         blogDate: '',
         blogTags: '',
         blogLink: '',
-        image: '',
         alt_tag: '',
         content: '',
         schema_data: '',
@@ -25,19 +23,17 @@ export default function AddBlogs() {
         if (id !== 'add') {
             fetchBlogsByID(id)
                 .then(data => {
-                    // Set form data and editorHtml
-                    setFormData(prevData => ({
-                        ...prevData,
-                      
+                    // Set form data and image
+                    setFormData({
                         blogName: data.blogName,
                         blogBy: data.blogBy,
                         blogDate: data.blogDate,
-                        blogLink: data.blogLink,
                         blogTags: data.blogTags,
+                        blogLink: data.blogLink || '', // Handle empty blogLink
                         alt_tag: data.alt_tag,
                         content: data.content,
-                        schema_data: data.schema_data,
-                    }));
+                        schema_data: data.schema_data || '', // Handle empty schema_data
+                    });
                     setImage(null); // Optionally reset image if needed
                 })
                 .catch(console.error);
@@ -65,27 +61,26 @@ export default function AddBlogs() {
         formDataToSend.append('blogName', formData.blogName || ' ');
         formDataToSend.append('blogBy', formData.blogBy || ' ');
         formDataToSend.append('blogDate', formData.blogDate || ' ');
-        formDataToSend.append('blogLink', formData.blogLink || ' ');
         formDataToSend.append('blogTags', formData.blogTags || ' ');
+        formDataToSend.append('blogLink', formData.blogLink || ''); // Optional field
         formDataToSend.append('alt_tag', formData.alt_tag || ' ');
         formDataToSend.append('content', formData.content || ' ');
-        formDataToSend.append('schema_data', formData.schema_data || ' ');
+        formDataToSend.append('schema_data', formData.schema_data || ''); // Optional field
         if (image) {
             formDataToSend.append('image', image);
         }
 
         try {
-            
             await saveBlogs(id, formDataToSend);
-            alert('Meta info saved successfully');
+            alert('Blog saved successfully');
             navigate(-1);
         } catch (error) {
-            alert(`Failed to save meta info: ${error.message}`);
+            alert(`Failed to save blog: ${error.message}`);
         }
     };
 
     const getImagePreviewUrl = () => {
-        return formData.image ? URL.createObjectURL(formData.image) : '';
+        return image ? URL.createObjectURL(image) : ''; // Show preview for the selected image
     };
 
     return (
@@ -97,7 +92,7 @@ export default function AddBlogs() {
                         <div className="row column_title">
                             <div className="col-md-12">
                                 <div className="page_title">
-                                    <h2>{id === 'add' ? 'Add Blogs' : 'Edit Blog'}</h2>
+                                    <h2>{id === 'add' ? 'Add Blog' : 'Edit Blog'}</h2>
                                 </div>
                             </div>
                         </div>
@@ -106,49 +101,51 @@ export default function AddBlogs() {
                             <div className="col-md-12">
                                 <div className="white_shd full margin_bottom_30">
                                     <div className="full graph_head">
-                                    <button 
-                                    className="btn btn-primary btn-xs float-right"
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Back
-                                </button>
+                                        <button 
+                                            className="btn btn-primary btn-xs float-right"
+                                            onClick={() => navigate(-1)}
+                                        >
+                                            Back
+                                        </button>
                                     </div>
                                     <div className="full price_table padding_infor_info">
                                         <form onSubmit={handleSubmit} id="add_blogs" encType="multipart/form-data">
                                             <div className="form-row">
-                                                
                                                 <div className="col-md-12 form-group">
-                                                    <label className="label_field">Blogs Name</label>
+                                                    <label className="label_field">Blog Name</label>
                                                     <input
                                                         type="text"
                                                         name="blogName"
                                                         value={formData.blogName}
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Blogs By</label>
+                                                    <label className="label_field">Blog By</label>
                                                     <input
                                                         type="text"
                                                         name="blogBy"
                                                         value={formData.blogBy}
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Blogs Date</label>
+                                                    <label className="label_field">Blog Date</label>
                                                     <input
                                                         type="date"
                                                         name="blogDate"
                                                         value={formData.blogDate}
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Blogs Tags</label>
+                                                    <label className="label_field">Blog Tags</label>
                                                     <input
                                                         type='text'
                                                         name="blogTags"
@@ -156,10 +153,9 @@ export default function AddBlogs() {
                                                         onChange={handleInputChange}
                                                         className="form-control"
                                                     />
-                                                    
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Blogs Link</label>
+                                                    <label className="label_field">Blog Link</label>
                                                     <input
                                                         type="text"
                                                         name="blogLink"
@@ -169,17 +165,18 @@ export default function AddBlogs() {
                                                     />
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Blogs Image</label>
+                                                    <label className="label_field">Blog Image</label>
                                                     <input
                                                         type="file"
                                                         name="image"
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     />
-                                                    {formData.image && (
+                                                    {image && (
                                                         <img
-                                                            // src={getImagePreviewUrl()}
-                                                            alt="Blogs Image"
+                                                            src={getImagePreviewUrl()}
+                                                            alt="Blog Image"
                                                             className="img-thumbnail mt-2"
                                                             width="120"
                                                             height="70"
@@ -194,6 +191,7 @@ export default function AddBlogs() {
                                                         value={formData.alt_tag}
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="col-md-12 form-group">
@@ -204,6 +202,7 @@ export default function AddBlogs() {
                                                         value={formData.content}
                                                         onChange={handleInputChange}
                                                         className="form-control"
+                                                        required
                                                     ></textarea>
                                                 </div>
                                                 <div className="col-md-12 form-group">
@@ -220,7 +219,7 @@ export default function AddBlogs() {
 
                                             <div className="form-group margin_0">
                                                 <button className="main_bt" type="submit">
-                                                  {id === 'add' ? 'Submit' : 'Update'}
+                                                    {id === 'add' ? 'Submit' : 'Update'}
                                                 </button>
                                             </div>
                                         </form>

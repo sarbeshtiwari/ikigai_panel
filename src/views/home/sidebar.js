@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Button, Offcanvas } from 'react-bootstrap';
 import logo from '../../assets/images/logo.png';
 
@@ -7,10 +7,59 @@ export default function Sidebar() {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showOther, setShowOther] = useState(false);
     const [showEnquiry, setShowEnquiry] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(null);
+
+    const location = useLocation();
 
     const toggleSidebar = () => setShowSidebar(!showSidebar);
     const toggleOther = () => setShowOther(!showOther);
     const toggleEnquiry = () => setShowEnquiry(!showEnquiry);
+
+    useEffect(() => {
+        const checkTokenExpiry = () => {
+            const expiryTime = localStorage.getItem('expiryTime');
+            if (expiryTime) {
+                const expiryTimestamp = parseInt(expiryTime, 10);
+                if (!isNaN(expiryTimestamp)) {
+                    const currentTime = Date.now();
+                    const timeRemaining = Math.max(0, Math.floor((expiryTimestamp - currentTime) / 1000));
+                    setTimeLeft(timeRemaining);
+                    if (timeRemaining <= 0) {
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('expiryTime');
+                        window.location.href = '/login';
+                    }
+                }
+            }
+        };
+
+        checkTokenExpiry(); // Check immediately
+        const interval = setInterval(checkTokenExpiry, 1000); // Update every second
+
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    }, []);
+
+    useEffect(() => {
+        // Show sidebar by default on Dashboard route
+        if (location.pathname === '/dashboard') {
+            setShowSidebar(true);
+        } else {
+            setShowSidebar(false);
+        }
+    }, [location]);
+
+    const formatTime = (seconds) => {
+        if (seconds <= 0) return '0m 0s';
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${minutes}m ${secs}s`;
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('expiryTime');
+        window.location.href = '/login';
+    };
 
     return (
         <>
@@ -27,10 +76,7 @@ export default function Sidebar() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
                         <NavDropdown title="Welcome" id="basic-nav-dropdown">
-                            {/* <NavDropdown.Item as={Link} to="">
-                                User List
-                            </NavDropdown.Item> */}
-                            <NavDropdown.Item as={Link} to="">
+                            <NavDropdown.Item onClick={handleLogout}>
                                 Log Out
                             </NavDropdown.Item>
                         </NavDropdown>
@@ -46,6 +92,7 @@ export default function Sidebar() {
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                     <Nav className="flex-column">
+                        {/* Navigation Links */}
                         <Nav.Link as={Link} to="/dashboard" 
                         style={{ backgroundColor: '#6434D6', 
                             borderColor: '#6434D6',
@@ -115,7 +162,6 @@ export default function Sidebar() {
                             FAQs
                         </Nav.Link>
                         
-                        
                         <Nav.Item>
                             <Nav.Link 
                                 onClick={toggleOther}
@@ -134,32 +180,11 @@ export default function Sidebar() {
                             {showOther && (
                                 <Nav className="flex-column bg-light p-2 rounded" id="other-items">
                                     <Nav.Link as={Link} to="/ourSpecialities" className="text-dark">
-                                        Our Specilities
+                                        Our Specialities
                                     </Nav.Link>
                                     <Nav.Link as={Link} to="/testimonial" className="text-dark">
                                         Testimonial
                                     </Nav.Link>
-                                     {/* <Nav.Link as={Link} to="/footerContent" className="text-dark">
-                                        Footer Content
-                                    </Nav.Link> */}
-                                    {/*<Nav.Link as={Link} to="/locationAdvantages" className="text-dark">
-                                        Common Location Advantages
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/approvedBanks" className="text-dark">
-                                        Approved Banks
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/developer" className="text-dark">
-                                        Developer
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/blogs" className="text-dark">
-                                        Blogs
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/events" className="text-dark">
-                                        Events
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/newsPaper" className="text-dark">
-                                        News Paper
-                                    </Nav.Link> */}
                                 </Nav>
                             )}
                         </Nav.Item>
@@ -181,18 +206,22 @@ export default function Sidebar() {
                             </Nav.Link>
                             {showEnquiry && (
                                 <Nav className="flex-column bg-light p-2 rounded" id="enquiry-items">
-                                    <Nav.Link as={Link} to="/appointments" className="text-dark">
+                                    <Nav.Link as={Link} to="/userQuery" className="text-dark">
+                                        User Query
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to="/appointment" className="text-dark">
                                         Appointments
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to="/ContactUs" className="text-dark">
-                                        Contact Us
-                                    </Nav.Link>
-                                    
                                 </Nav>
                             )}
                         </Nav.Item>
                     </Nav>
                 </Offcanvas.Body>
+                {timeLeft !== null && (
+                    <div className="mt-3 text-center">
+                        <span className="text-danger">Session expires in: {formatTime(timeLeft)}</span>
+                    </div>
+                )}
             </Offcanvas>
         </>
     );

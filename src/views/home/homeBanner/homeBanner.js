@@ -6,14 +6,20 @@ import { fetchHomeBanner, updateHomeBannerStatus, deleteHomeBanner, globals } fr
 
 export default function HomeBanner() {
     const [homeBanner, setHomeBanner] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const loadHomeBanner = async () => {
             try {
+                setLoading(true);
                 const homeBannerData = await fetchHomeBanner();
                 setHomeBanner(homeBannerData);
             } catch (err) {
+                setError('Failed to load data');
                 console.log('Failed to fetch data:', err);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -77,6 +83,8 @@ export default function HomeBanner() {
                                         </div>
                                     
                                     <div className="full price_table padding_infor_info">
+                                    {loading && <div className="loading">Loading...</div>}
+                                    {error && <div className="alert alert-danger">{error}</div>}
                                         <div className="row">
                                             <div className="col-lg-12">
                                                 <div className="table-responsive-sm">
@@ -101,7 +109,7 @@ export default function HomeBanner() {
                                                                    
                                                                     <td>
                                                                         <img 
-                                                                            src={banner.desktop_image_path ? `http://localhost:2000/uploads/home_banner/desktop/${banner.desktop_image_path}` : image} 
+                                                                            src={banner.desktop_image_path ? `${globals}/uploads/home_banner/desktop/${banner.desktop_image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={banner.alt_tag} 
@@ -111,7 +119,7 @@ export default function HomeBanner() {
                                                                     </td>
                                                                     <td>
                                                                         <img 
-                                                                            src={banner.tablet_image_path ? `http://localhost:2000/uploads/home_banner/tablet/${banner.tablet_image_path}` : image} 
+                                                                            src={banner.tablet_image_path ? `${globals}/uploads/home_banner/tablet/${banner.tablet_image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={banner.alt_tag} 
@@ -121,7 +129,7 @@ export default function HomeBanner() {
                                                                     </td>
                                                                     <td>
                                                                         <img 
-                                                                            src={banner.mobile_image_path ? `http://localhost:2000/uploads/home_banner/mobile/${banner.mobile_image_path}` : image} 
+                                                                            src={banner.mobile_image_path ? `${globals}/uploads/home_banner/mobile/${banner.mobile_image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={banner.alt_tag} 

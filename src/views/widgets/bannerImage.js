@@ -17,6 +17,8 @@ export default function AddBannerImage() {
         pageType: id
     }]);
 
+    const [validationErrors, setValidationErrors] = useState({});
+
     useEffect(() => {
         if (id) {
             // Uncomment and implement fetch if needed
@@ -38,24 +40,57 @@ export default function AddBannerImage() {
         setBanners(updatedBanners);
     };
 
+    const validateForm = () => {
+        const errors = {};
+        let hasImage = false;
+
+        banners.forEach((banner, index) => {
+            if (banner.desktop_image_path && !banner.alt_tag_desktop) {
+                errors[`alt_tag_desktop_${index}`] = 'Alt tag for desktop image is required';
+            }
+            if (banner.mobile_image_path && !banner.alt_tag_mobile) {
+                errors[`alt_tag_mobile_${index}`] = 'Alt tag for mobile image is required';
+            }
+            if (banner.tablet_image_path && !banner.alt_tag_tablet) {
+                errors[`alt_tag_tablet_${index}`] = 'Alt tag for tablet image is required';
+            }
+
+            if (banner.desktop_image_path || banner.mobile_image_path || banner.tablet_image_path) {
+                hasImage = true;
+            }
+        });
+
+        if (!hasImage) {
+            errors.general = 'At least one image is required';
+        }
+
+        return errors;
+    };
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-    
+
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
+
         const formDataToSend = new FormData();
         banners.forEach((banner, index) => {
-            formDataToSend.append(`alt_tag_desktop`, banner.alt_tag_desktop || '');
-            formDataToSend.append(`alt_tag_mobile`, banner.alt_tag_mobile || '');
-            formDataToSend.append(`alt_tag_tablet`, banner.alt_tag_tablet || '');
-            formDataToSend.append(`pageType`, banner.pageType || '');
+            formDataToSend.append(`alt_tag_desktop_${index}`, banner.alt_tag_desktop || '');
+            formDataToSend.append(`alt_tag_mobile_${index}`, banner.alt_tag_mobile || '');
+            formDataToSend.append(`alt_tag_tablet_${index}`, banner.alt_tag_tablet || '');
+            formDataToSend.append(`pageType_${index}`, banner.pageType || '');
 
             if (banner.desktop_image_path) {
-                formDataToSend.append(`desktop_image`, banner.desktop_image_path);
+                formDataToSend.append(`desktop_image_${index}`, banner.desktop_image_path);
             }
             if (banner.mobile_image_path) {
-                formDataToSend.append(`mobile_image`, banner.mobile_image_path);
+                formDataToSend.append(`mobile_image_${index}`, banner.mobile_image_path);
             }
             if (banner.tablet_image_path) {
-                formDataToSend.append(`tablet_image`, banner.tablet_image_path);
+                formDataToSend.append(`tablet_image_${index}`, banner.tablet_image_path);
             }
         });
 
@@ -94,108 +129,122 @@ export default function AddBannerImage() {
                                 </div>
                                 <div className="full price_table padding_infor_info">
                                     <form onSubmit={handleFormSubmit} encType="multipart/form-data">
-                                    {banners.map((banner, index) => (
-                                        <div className="row mb-3" key={index}>
-                                            <div className="col-md-4">
-                                                <div className="card mb-3">
-                                                    <div className="card-body">
-                                                        <label className="label_field">Desktop Image</label>
-                                                        <input
-                                                            type="file"
-                                                            name={`desktop_image_${index}`}
-                                                            onChange={(e) => handleFileChange(index, e, 'desktop_image_path')}
-                                                            className="form-control"
-                                                        />
-                                                        {banner.desktop_image_path && (
-                                                            <img
-                                                                src={URL.createObjectURL(banner.desktop_image_path)}
-                                                                alt="Desktop"
-                                                                className="img-thumbnail mt-2"
-                                                                style={{ width: '150px' }}
-                                                            />
-                                                        )}
-                                                        <div className="form-group mt-3">
-                                                            <label className="label_field">Alt Tag</label>
+                                        {banners.map((banner, index) => (
+                                            <div className="row mb-3" key={index}>
+                                                <div className="col-md-4">
+                                                    <div className="card mb-3">
+                                                        <div className="card-body">
+                                                            <label className="label_field">Desktop Image</label>
                                                             <input
-                                                                type="text"
-                                                                name="alt_tag_desktop"
-                                                                value={banner.alt_tag_desktop}
-                                                                onChange={(e) => handleInputChange(index, e)}
-                                                                className="form-control"
+                                                                type="file"
+                                                                name={`desktop_image_${index}`}
+                                                                onChange={(e) => handleFileChange(index, e, 'desktop_image_path')}
+                                                                className={`form-control ${validationErrors[`desktop_image_${index}`] ? 'is-invalid' : ''}`}
                                                             />
+                                                            {banner.desktop_image_path && (
+                                                                <img
+                                                                    src={URL.createObjectURL(banner.desktop_image_path)}
+                                                                    alt="Desktop"
+                                                                    className="img-thumbnail mt-2"
+                                                                    style={{ width: '150px' }}
+                                                                />
+                                                            )}
+                                                            <div className="form-group mt-3">
+                                                                <label className="label_field">Alt Tag</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="alt_tag_desktop"
+                                                                    value={banner.alt_tag_desktop}
+                                                                    onChange={(e) => handleInputChange(index, e)}
+                                                                    className={`form-control ${validationErrors[`alt_tag_desktop_${index}`] ? 'is-invalid' : ''}`}
+                                                                />
+                                                                {validationErrors[`alt_tag_desktop_${index}`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_desktop_${index}`]}</div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="col-md-4">
-                                                <div className="card mb-3">
-                                                    <div className="card-body">
-                                                        <label className="label_field">Mobile Image</label>
-                                                        <input
-                                                            type="file"
-                                                            name={`mobile_image_${index}`}
-                                                            onChange={(e) => handleFileChange(index, e, 'mobile_image_path')}
-                                                            className="form-control"
-                                                        />
-                                                        {banner.mobile_image_path && (
-                                                            <img
-                                                                src={URL.createObjectURL(banner.mobile_image_path)}
-                                                                alt="Mobile"
-                                                                className="img-thumbnail mt-2"
-                                                                style={{ width: '150px' }}
-                                                            />
-                                                        )}
-                                                        <div className="form-group mt-3">
-                                                            <label className="label_field">Alt Tag</label>
+                                                <div className="col-md-4">
+                                                    <div className="card mb-3">
+                                                        <div className="card-body">
+                                                            <label className="label_field">Mobile Image</label>
                                                             <input
-                                                                type="text"
-                                                                name="alt_tag_mobile"
-                                                                value={banner.alt_tag_mobile}
-                                                                onChange={(e) => handleInputChange(index, e)}
-                                                                className="form-control"
+                                                                type="file"
+                                                                name={`mobile_image_${index}`}
+                                                                onChange={(e) => handleFileChange(index, e, 'mobile_image_path')}
+                                                                className={`form-control ${validationErrors[`mobile_image_${index}`] ? 'is-invalid' : ''}`}
                                                             />
+                                                            {banner.mobile_image_path && (
+                                                                <img
+                                                                    src={URL.createObjectURL(banner.mobile_image_path)}
+                                                                    alt="Mobile"
+                                                                    className="img-thumbnail mt-2"
+                                                                    style={{ width: '150px' }}
+                                                                />
+                                                            )}
+                                                            <div className="form-group mt-3">
+                                                                <label className="label_field">Alt Tag</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="alt_tag_mobile"
+                                                                    value={banner.alt_tag_mobile}
+                                                                    onChange={(e) => handleInputChange(index, e)}
+                                                                    className={`form-control ${validationErrors[`alt_tag_mobile_${index}`] ? 'is-invalid' : ''}`}
+                                                                />
+                                                                {validationErrors[`alt_tag_mobile_${index}`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_mobile_${index}`]}</div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="col-md-4">
-                                                <div className="card mb-3">
-                                                    <div className="card-body">
-                                                        <label className="label_field">Tablet Image</label>
-                                                        <input
-                                                            type="file"
-                                                            name={`tablet_image_${index}`}
-                                                            onChange={(e) => handleFileChange(index, e, 'tablet_image_path')}
-                                                            className="form-control"
-                                                        />
-                                                        {banner.tablet_image_path && (
-                                                            <img
-                                                                src={URL.createObjectURL(banner.tablet_image_path)}
-                                                                alt="Tablet"
-                                                                className="img-thumbnail mt-2"
-                                                                style={{ width: '150px' }}
-                                                            />
-                                                        )}
-                                                        <div className="form-group mt-3">
-                                                            <label className="label_field">Alt Tag</label>
+                                                <div className="col-md-4">
+                                                    <div className="card mb-3">
+                                                        <div className="card-body">
+                                                            <label className="label_field">Tablet Image</label>
                                                             <input
-                                                                type="text"
-                                                                name="alt_tag_tablet"
-                                                                value={banner.alt_tag_tablet}
-                                                                onChange={(e) => handleInputChange(index, e)}
-                                                                className="form-control"
+                                                                type="file"
+                                                                name={`tablet_image_${index}`}
+                                                                onChange={(e) => handleFileChange(index, e, 'tablet_image_path')}
+                                                                className={`form-control ${validationErrors[`tablet_image_${index}`] ? 'is-invalid' : ''}`}
                                                             />
+                                                            {banner.tablet_image_path && (
+                                                                <img
+                                                                    src={URL.createObjectURL(banner.tablet_image_path)}
+                                                                    alt="Tablet"
+                                                                    className="img-thumbnail mt-2"
+                                                                    style={{ width: '150px' }}
+                                                                />
+                                                            )}
+                                                            <div className="form-group mt-3">
+                                                                <label className="label_field">Alt Tag</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="alt_tag_tablet"
+                                                                    value={banner.alt_tag_tablet}
+                                                                    onChange={(e) => handleInputChange(index, e)}
+                                                                    className={`form-control ${validationErrors[`alt_tag_tablet_${index}`] ? 'is-invalid' : ''}`}
+                                                                />
+                                                                {validationErrors[`alt_tag_tablet_${index}`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_tablet_${index}`]}</div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                        {validationErrors.general && (
+                                            <div className="alert alert-danger">
+                                                {validationErrors.general}
+                                            </div>
+                                        )}
                                         <div className="form-group margin_0">
                                             <button className="main_bt" type="submit">
-                                               Add Banner
+                                                Add Banner
                                             </button>
                                         </div>
                                     </form>

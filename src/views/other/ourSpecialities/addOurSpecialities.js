@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../home/sidebar';
 import { fetchOurSpecialityByID, saveOurSpeciality } from '../../../controllers/ourSpecialities/ourSpecialities';
-// Import API functions if you have them
-// import { addSpeciality, updateSpeciality, fetchSpeciality } from '../api';
 
 export default function AddSpecialities() {
     const navigate = useNavigate();
@@ -14,13 +12,11 @@ export default function AddSpecialities() {
         content: '',
         schema_data: '',
     });
-
     const [image, setImage] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
         if (id !== 'add') {
-            // Fetch existing data if not adding a new speciality
-            // Example API call, adjust as needed
             fetchOurSpecialityByID(id)
                 .then(data => {
                     setFormData({
@@ -44,10 +40,24 @@ export default function AddSpecialities() {
         setImage(e.target.files[0]);
     };
 
+    const validateForm = () => {
+       
+        const errors = {};
+        if (!formData.heading) errors.heading = 'Heading is required';
+        if (!formData.content) errors.content = 'Content is required';
+        if (!image) errors.image = 'Image is required';
+        return errors;
+    };
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        const { heading, content, schema_data } = formData;
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+        }
 
+        const { heading, content, schema_data } = formData;
         const formDataToSend = new FormData();
         formDataToSend.append('heading', heading);
         formDataToSend.append('content', content);
@@ -58,7 +68,7 @@ export default function AddSpecialities() {
 
         try {
             await saveOurSpeciality(id, formDataToSend);
-            alert('Meta info saved successfully');
+            alert('Speciality saved successfully');
             navigate(-1);
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -93,7 +103,6 @@ export default function AddSpecialities() {
                                         </div>
                                         <div className="full price_table padding_infor_info">
                                             <form onSubmit={handleFormSubmit} id="specialitiesForm" encType="multipart/form-data">
-                                                <span className="status text-danger mb-0"></span>
                                                 <div className="form-row mb-3">
                                                     <div className="col-md-6 form-group">
                                                         <label className="label_field">Heading</label>
@@ -103,8 +112,11 @@ export default function AddSpecialities() {
                                                             id="heading"
                                                             value={formData.heading}
                                                             onChange={handleInputChange}
-                                                            className="form-control"
+                                                            className={`form-control ${validationErrors.heading ? 'is-invalid' : ''}`}
                                                         />
+                                                        {validationErrors.heading && (
+                                                            <div className="invalid-feedback">{validationErrors.heading}</div>
+                                                        )}
                                                     </div>
 
                                                     <div className="col-md-6 form-group">
@@ -114,19 +126,25 @@ export default function AddSpecialities() {
                                                             name="image"
                                                             id="image"
                                                             onChange={handleFileChange}
-                                                            className="form-control"
+                                                            className={`form-control ${validationErrors.image ? 'is-invalid' : ''}`}
                                                         />
+                                                        {validationErrors.image && (
+                                                            <div className="invalid-feedback">{validationErrors.image}</div>
+                                                        )}
                                                     </div>
                                                     <div className="col-md-12 form-group">
                                                         <label className="label_field">Content</label>
                                                         <textarea
                                                             name="content"
-                                                            id="content"
+                                                            id="ccontent"
                                                             value={formData.content}
                                                             onChange={handleInputChange}
-                                                            className="form-control"
+                                                            className={`form-control ${validationErrors.content ? 'is-invalid' : ''}`}
                                                             rows="5"
                                                         ></textarea>
+                                                        {validationErrors.content && (
+                                                            <div className="invalid-feedback">{validationErrors.content}</div>
+                                                        )}
                                                     </div>
                                                     <div className="col-md-12 form-group">
                                                         <label className="label_field">Schema</label>
@@ -144,7 +162,6 @@ export default function AddSpecialities() {
                                                 <div className="form-group margin_0">
                                                     <button className="main_bt" type="submit">Submit</button>
                                                 </div>
-                                                <span id="result" className="text-danger mt-4 d-block"></span>
                                             </form>
                                         </div>
                                     </div>

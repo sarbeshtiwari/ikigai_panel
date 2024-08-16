@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export const globals = `http://localhost:1000`;
+export const globals = `https://ikigai-panel-api.onrender.com`;
 
-const API_URL = 'http://localhost:1000/homeBanner';
+const API_URL = 'https://ikigai-panel-api.onrender.com/homeBanner';
 const API_URL1 = 'http://localhost:2000';
 
 export const fetchHomeBanner = async () => {
@@ -51,7 +51,7 @@ export const fetchHomeBannerByID = async (id) => {
 
 export const saveHomeBanner = async (id, formDataToSend) => {
     try {
-        const url = id === 'add' ? `${API_URL}/upload` : `${API_URL}/update/${id}`;
+        const url = id === 'add' ? `${API_URL}/upload` : `${API_URL}/upload/${id}`;
         const method = id === 'add' ? 'POST' : 'PUT';
         const response = await axios({
             method,

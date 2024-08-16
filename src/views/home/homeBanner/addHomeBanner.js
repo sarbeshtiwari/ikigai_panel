@@ -82,7 +82,7 @@ export default function AddHomeBanner() {
     });
 
     try {
-        await addHomeBanner(id, formDataToSend);
+        await saveHomeBanner(id, formDataToSend);
         alert('Banner saved successfully');
         navigate(-1);
     } catch (error) {
@@ -236,13 +236,13 @@ export default function AddHomeBanner() {
                                                 </div>
                                             ))}
 
-                                            <button
+                                            {/* <button
                                                 type="button"
                                                 className="btn btn-primary mb-3"
                                                 onClick={handleAddRow}
                                             >
                                                 Add More
-                                            </button>
+                                            </button> */}
 
                                             <div className="form-group margin_0">
                                                 <input type="hidden" name="addcities" id="addcities" value="active" />

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/logo.png"
-import backgroundImage from "../../assets/images/banner1.jpg"
+import logo from "../../assets/images/logo.png";
+import backgroundImage from "../../assets/images/banner1.jpg";
+import { loginUser } from "../../controllers/login/login"; 
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -31,18 +32,16 @@ export default function Login() {
     
         try {
             setLoading(true);
-            // let result = await verifyLogin(username, password);
-    
-            // console.log("Login result:", result);
-    
-            // if (result.success) {
-                // localStorage.setItem('authToken', result.token); // Store the token from response
+            const result = await loginUser(username, password); // Call API
+
+            if (result.token) {
+                localStorage.setItem('authToken', result.token); // Store the token from response
                 console.log("Navigating to /dashboard");
                 setStatus("User is logged in");
                 navigate("/dashboard");
-            // } else {
-                // setStatus("Login failed");
-            // }
+            } else {
+                setStatus("Login failed");
+            }
         } catch (error) {
             console.error("Login error:", error);
             setStatus("An error occurred during login");
@@ -50,14 +49,13 @@ export default function Login() {
             setLoading(false);
         }
     };
-    
 
     return (
         <section className="flex flex-col md:flex-row h-screen items-center">
             <div className="bg-white lg:block w-full md:w-1/2 xl:w-2/3 h-screen">
                 <img 
                     src={backgroundImage} 
-                    alt={backgroundImage} 
+                    alt="Background" 
                     className="w-full h-full object-cover rounded-br-xl rounded-tr-xl"
                 />
             </div>

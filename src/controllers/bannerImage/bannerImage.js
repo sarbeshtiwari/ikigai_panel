@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:1000/bannerImage';
+const API_URL = 'https://ikigai-panel-api.onrender.com/bannerImage';
 
 export const deleteBanner = async (id) => {
     try {
@@ -16,7 +16,8 @@ export const deleteBanner = async (id) => {
 export const fetchBannerByID = async (id) => {
     try {
         const response = await axios.get(`${API_URL}/getBanner/${id}`);
-        return response.data.data;
+        
+        return response.data;
     } catch (error) {
         console.error('Error fetching  banner data:', error);
         throw error;
@@ -35,6 +36,19 @@ export const addBannerImage = async (formDataToSend) => {
         return response.data;
     } catch (error) {
         console.error('Error submitting form:', error);
+        throw error;
+    }
+};
+
+export const updateBannerStatus = async (id, status) => {
+    try {
+        const response = await axios.patch(`${API_URL}/updateStatus`, {
+            id,
+            status
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating About Us status:', error);
         throw error;
     }
 };
