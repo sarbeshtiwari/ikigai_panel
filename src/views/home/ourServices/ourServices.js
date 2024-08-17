@@ -81,7 +81,7 @@ const OurServices = () => {
             if (result.success) {
                 alert('Banner deleted successfully');
                 loadBannerImage();
-                // setAbouts(prevAbouts => prevAbouts.filter(about => about.id !== id));
+                // setservicess(prevservicess => prevservicess.filter(services => services.id !== id));
             } else {
                 alert(`Error: ${result.message}`);
             }
@@ -275,6 +275,7 @@ const OurServices = () => {
                                                         <th>No</th>
                                                         <th>Heading</th>
                                                         <th>Content</th>
+                                                        <th>Image</th>
                                                         <th>On Home</th>
                                                         <th>On Top </th>
                                                         <th>Current Status</th>
@@ -291,6 +292,17 @@ const OurServices = () => {
                                                                     Overview
                                                                 </button>
                                                             </div></td>
+                                                            <td>
+                                                            <img
+                                                                    src={services.image_path ? `${globals}/uploads/our_services/${services.image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={services.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                />
+                                                            </td>
+                                                          
                                                             <td>
                                                                 {services.on_home === 0 ? (
                                                                                     <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 1)}>Deactivate</button>

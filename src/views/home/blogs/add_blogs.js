@@ -55,29 +55,29 @@ export default function AddBlogs() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+      
         const formDataToSend = new FormData();
-        
         formDataToSend.append('blogName', formData.blogName || ' ');
         formDataToSend.append('blogBy', formData.blogBy || ' ');
         formDataToSend.append('blogDate', formData.blogDate || ' ');
         formDataToSend.append('blogTags', formData.blogTags || ' ');
-        formDataToSend.append('blogLink', formData.blogLink || ''); // Optional field
+        formDataToSend.append('blogLink', formData.blogLink || '');
         formDataToSend.append('alt_tag', formData.alt_tag || ' ');
         formDataToSend.append('content', formData.content || ' ');
-        formDataToSend.append('schema_data', formData.schema_data || ''); // Optional field
+        formDataToSend.append('schema_data', formData.schema_data || '');
         if (image) {
-            formDataToSend.append('image', image);
+          formDataToSend.append('image', image);
         }
-
+      
         try {
-            await saveBlogs(id, formDataToSend);
-            alert('Blog saved successfully');
-            navigate(-1);
+          await saveBlogs(id, formDataToSend);
+          alert('Blog saved successfully');
+          navigate(-1);
         } catch (error) {
-            alert(`Failed to save blog: ${error.message}`);
+          alert(`Failed to save blog: ${error.message}`);
         }
-    };
+      };
+      
 
     const getImagePreviewUrl = () => {
         return image ? URL.createObjectURL(image) : ''; // Show preview for the selected image

@@ -254,7 +254,13 @@ export default function Testimonial() {
                                                                                 Watch Video
                                                                             </a>
                                                                         ) : (
-                                                                            'No Video'
+                                                                            <a
+                                                                                href={Testimonial.videoURL}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                Watch Video
+                                                                            </a>
                                                                         )}
                                                                     </td>
                                                                     <td>{Testimonial.status === 0 ? (

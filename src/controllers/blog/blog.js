@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/blog';
+const API_URL = 'http://localhost:1000/blog';
 
 export const fetchBlogs = async () => {
     try {
@@ -58,6 +58,7 @@ export const saveBlogs = async (id, formDataToSend) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
+        console.log('Response:', response.data);
 
         return response.data;
     } catch (error) {

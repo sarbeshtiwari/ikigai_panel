@@ -5,6 +5,7 @@ import Overview from '../../widgets/overview';
 import { deleteAboutUs, fetchAboutUs, updateAboutUsOnHomeStatus, updateAboutUsOnTopStatus, updateAboutUsStatus } from '../../../controllers/about/about';
 import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
 import { globals } from '../../../controllers/home_banner/home_banner';
+import ImageModal from '../../widgets/imageModel';
 
 const AboutUs = () => {
     const [abouts, setAbouts] = useState([]);
@@ -14,6 +15,17 @@ const AboutUs = () => {
     const [error, setError] = useState('');
     const [selectedDetail, setSelectedDetail] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+
+    const handleClose = () => setShowModal(false);
 
     const openModal = (about) => {
         setSelectedDetail(about);
@@ -52,21 +64,12 @@ const AboutUs = () => {
     const loadBannerImage = async () => {
         try {
             const bannerData = await fetchBannerByID('about');
-            // console.log('Type of bannerData:', typeof bannerData);
-            // console.log('Content of bannerData:', bannerData);
-            
-            // // Wrap the object in an array
-            // const bannerDataArray = [bannerData];
-            // console.log('Wrapped bannerData in an array:', bannerDataArray);
-            
             setBannerImage(bannerData);
         } catch (err) {
             console.log('Failed to fetch Banner Image data:', err);
             setError('Failed to fetch Banner Image data');
         }
     };
-    
-    
 
     const handleUpdateStatus = async (id, currentStatus) => {
         try {
@@ -102,7 +105,6 @@ const AboutUs = () => {
             if (result.success) {
                 alert('Banner deleted successfully');
                 loadBannerImage();
-                // setAbouts(prevAbouts => prevAbouts.filter(about => about.id !== id));
             } else {
                 alert(`Error: ${result.message}`);
             }
@@ -174,86 +176,88 @@ const AboutUs = () => {
                                     {error && <div className="alert alert-danger">{error}</div>}
                                     {bannerImage.length > 0 ? (
                                         <>
-                                        <h2 className="mt-4 mb-4">Banner Images</h2>
-                                        <div className="table-responsive-sm">
-                                            <table id="subct" className="table table-striped projects">
-                                                <thead className="thead-dark">
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Image Desktop</th>
-                                                        <th>Image Tablet</th>
-                                                        <th>Image Mobile</th>
-                                                        <th>Current Status</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {bannerImage.map((banner, index) => (
-                                                        <tr key={banner.id}>
-                                                            <td>{index + 1}</td>
-                                                            <td>
-                                                                <img
-                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
-                                                                    className="rounded-circle"
-                                                                    style={{ objectFit: 'cover' }}
-                                                                    alt={banner.alt_tag}
-                                                                    width="50"
-                                                                    height="50"
-                                                                />
-                                                            </td>
-                                                            <td>
-                                                                <img
-                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
-                                                                    className="rounded-circle"
-                                                                    style={{ objectFit: 'cover' }}
-                                                                    alt={banner.alt_tag}
-                                                                    width="50"
-                                                                    height="50"
-                                                                />
-                                                            </td>
-                                                            <td>
-                                                                <img
-                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
-                                                                    className="rounded-circle"
-                                                                    style={{ objectFit: 'cover' }}
-                                                                    alt={banner.alt_tag}
-                                                                    width="50"
-                                                                    height="50"
-                                                                />
-                                                            </td>
-                                                            <td>
-                                                                {banner.status === 0 ? (
-                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
-                                                                ) : (
-                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
-                                                                )}
-                                                            </td>
-                                                            <td>
-                                                                <ul className="list-inline d-flex justify-content-center">
-                                                                    <li>
-                                                                        <button
-                                                                            className="btn btn-danger btn-xs"
-                                                                            onClick={() => {
-                                                                                if (window.confirm('Are you sure you want to delete this banner image?')) {
-                                                                                    handleDeleteBanner(banner.id);
-                                                                                }
-                                                                            }}
-                                                                        >
-                                                                            <i className="fa fa-trash"></i>
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
+                                            <h2 className="mt-4 mb-4">Banner Images</h2>
+                                            <div className="table-responsive-sm">
+                                                <table id="subct" className="table table-striped projects">
+                                                    <thead className="thead-dark">
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Image Desktop</th>
+                                                            <th>Image Tablet</th>
+                                                            <th>Image Mobile</th>
+                                                            <th>Current Status</th>
+                                                            <th></th>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div> 
-                                        
+                                                    </thead>
+                                                    <tbody>
+                                                        {bannerImage.map((banner, index) => (
+                                                            <tr key={banner.id}>
+                                                                <td>{index + 1}</td>
+                                                                <td>
+                                                                    <img
+                                                                        src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                        className="rounded-circle"
+                                                                        style={{ objectFit: 'cover', cursor: 'pointer' }} // Add cursor pointer for click
+                                                                        alt={banner.alt_tag}
+                                                                        width="50"
+                                                                        height="50"
+                                                                        onClick={() => handleShow(`${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}`, banner.alt_tag)}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <img
+                                                                        src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                        className="rounded-circle"
+                                                                        style={{ objectFit: 'cover', cursor: 'pointer' }} // Add cursor pointer for click
+                                                                        alt={banner.alt_tag}
+                                                                        width="50"
+                                                                        height="50"
+                                                                        onClick={() => handleShow(`${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}`, banner.alt_tag)}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <img
+                                                                        src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                        className="rounded-circle"
+                                                                        style={{ objectFit: 'cover', cursor: 'pointer' }} // Add cursor pointer for click
+                                                                        alt={banner.alt_tag}
+                                                                        width="50"
+                                                                        height="50"
+                                                                        onClick={() => handleShow(`${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}`, banner.alt_tag)}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    {banner.status === 0 ? (
+                                                                        <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
+                                                                    ) : (
+                                                                        <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
+                                                                    )}
+                                                                </td>
+                                                                <td>
+                                                                    <ul className="list-inline d-flex justify-content-center">
+                                                                        <li>
+                                                                            <button
+                                                                                className="btn btn-danger btn-xs"
+                                                                                onClick={() => {
+                                                                                    if (window.confirm('Are you sure you want to delete this banner image?')) {
+                                                                                        handleDeleteBanner(banner.id);
+                                                                                    }
+                                                                                }}
+                                                                            >
+                                                                                <i className="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </>
-                                    ): ('')}
+                                    ) : ('')}
                                     
-                                        <h2 className="mt-4 mb-4">About Us Data</h2>
+                                    <h2 className="mt-4 mb-4">About Us Data</h2>
                                     
                                     <div className="table-responsive-sm">
                                         <table id="subct" className="table table-striped projects">
@@ -262,6 +266,7 @@ const AboutUs = () => {
                                                     <th>No</th>
                                                     <th>Heading</th>
                                                     <th>Content</th>
+                                                    <th>Image</th>
                                                     <th>On Home</th>
                                                     <th>On Top </th>
                                                     <th>Current Status</th>
@@ -277,6 +282,18 @@ const AboutUs = () => {
                                                             <button onClick={() => openModal(about)} className="btn btn-success btn-xs">
                                                                 Overview
                                                             </button>
+                                                        </td>
+                                                        <td>
+                                                        <td>
+                                                            <img
+                                                                    src={about.image_path ? `${globals}/uploads/about_us/${about.image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={about.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                />
+                                                            </td>
                                                         </td>
                                                         <td>
                                                             {about.on_home === 0 ? (
@@ -327,6 +344,12 @@ const AboutUs = () => {
                     </div>
                 </div>
             </div>
+            <ImageModal 
+                show={showModal} 
+                handleClose={handleClose} 
+                imageUrl={modalImageUrl} 
+                altText={modalAltText} 
+            />
             <Overview 
                 isOpen={isModalOpen} 
                 onClose={closeModal} 

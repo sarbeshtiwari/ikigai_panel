@@ -96,6 +96,7 @@ const AddOurTeam = () => {
                                                         onChange={handleEditorChange}
                                                         modules={AddOurTeam.modules}
                                                         formats={AddOurTeam.formats}
+                                                        style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
                                                     />
                                                 </div>
                                             </div>

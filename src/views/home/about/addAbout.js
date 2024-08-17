@@ -74,6 +74,7 @@ const AddAboutUs = () => {
                                                         onChange={handleEditorChange}
                                                         modules={AddAboutUs.modules}
                                                         formats={AddAboutUs.formats}
+                                                        style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
                                                     />
                                                 </div>
                                             </div>

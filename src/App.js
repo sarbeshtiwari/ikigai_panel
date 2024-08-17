@@ -24,6 +24,7 @@ import AddBannerImage from "./views/widgets/bannerImage";
 import Query from "./views/enquiry/user_query";
 import Appointment from "./views/enquiry/appointment";
 import PrivateRoute from './PrivateRoute';
+import './App.css';
 
 function App() {
   return (

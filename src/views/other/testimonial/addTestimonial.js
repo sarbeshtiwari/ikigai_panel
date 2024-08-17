@@ -15,6 +15,7 @@ export default function AddTestimonial() {
     const [image, setImage] = useState(null);
     const [video, setVideo] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
+    const [loading, setLoading] = useState(false);  // New loading state
 
     useEffect(() => {
         if (id !== 'add') {
@@ -73,6 +74,8 @@ export default function AddTestimonial() {
             formDataToSend.append('video', video);
         }
 
+        setLoading(true);  // Set loading to true when submission starts
+
         try {
             let result;
             result = await saveTestimonials(id, formDataToSend);
@@ -86,6 +89,8 @@ export default function AddTestimonial() {
             }
         } catch (error) {
             console.error('Error submitting form:', error);
+        } finally {
+            setLoading(false);  // Set loading to false when submission completes
         }
     };
 
@@ -171,9 +176,15 @@ export default function AddTestimonial() {
                                             </div>
 
                                             <div className="form-group margin_0">
-                                                <input type="hidden" name="addcities" id="addcities" value="active" />
-                                                <input type="hidden" name="ct_id" id="ct_id" value="" />
-                                                <button className="main_bt" type="submit">Submit</button>
+                                              
+                                               
+                                                <button 
+                                                    className="main_bt" 
+                                                    type="submit" 
+                                                    disabled={loading}  // Disable button when loading
+                                                >
+                                                    {loading ? 'Submitting...' : 'Submit'}
+                                                </button>
                                             </div>
                                             <span id="result" className="text-danger mt-4 d-block"></span>
                                         </form>

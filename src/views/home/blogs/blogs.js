@@ -7,12 +7,23 @@ import image from '../../../assets/images/logo.png';
 import { globals } from '../../../controllers/home_banner/home_banner';
 import { deleteBlogs, fetchBlogs, updateBlogsStatus } from '../../../controllers/blog/blog';
 import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
+import ImageModal from '../../widgets/imageModel';
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState([]);
     const [bannerImage, setBannerImage] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -114,6 +125,7 @@ export default function Blogs() {
     };
 
     return (
+        <>
         <div>
             <Sidebar />
             <div>
@@ -168,6 +180,7 @@ export default function Blogs() {
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -178,6 +191,7 @@ export default function Blogs() {
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -188,6 +202,7 @@ export default function Blogs() {
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -251,6 +266,7 @@ export default function Blogs() {
                                                                             alt={blog.blogsImage} 
                                                                             width="50" 
                                                                             height="50" 
+                                                                            onClick={() => handleShow(`${globals}/uploads/blogs/${blog.image_path}`)}
                                                                         />
                                                                     </td>
                                                                     <td>{blog.blogName}</td>
@@ -297,5 +313,12 @@ export default function Blogs() {
                 </div>
             </div>
         </div>
+         <ImageModal 
+         show={showModal} 
+         handleClose={handleClose} 
+         imageUrl={modalImageUrl} 
+         altText={modalAltText} 
+     />
+     </>
     );
 }

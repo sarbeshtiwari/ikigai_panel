@@ -46,13 +46,13 @@ export default function AddBannerImage() {
 
         banners.forEach((banner, index) => {
             if (banner.desktop_image_path && !banner.alt_tag_desktop) {
-                errors[`alt_tag_desktop_${index}`] = 'Alt tag for desktop image is required';
+                errors[`alt_tag_desktop`] = 'Alt tag for desktop image is required';
             }
             if (banner.mobile_image_path && !banner.alt_tag_mobile) {
-                errors[`alt_tag_mobile_${index}`] = 'Alt tag for mobile image is required';
+                errors[`alt_tag_mobile`] = 'Alt tag for mobile image is required';
             }
             if (banner.tablet_image_path && !banner.alt_tag_tablet) {
-                errors[`alt_tag_tablet_${index}`] = 'Alt tag for tablet image is required';
+                errors[`alt_tag_tablet`] = 'Alt tag for tablet image is required';
             }
 
             if (banner.desktop_image_path || banner.mobile_image_path || banner.tablet_image_path) {
@@ -78,19 +78,19 @@ export default function AddBannerImage() {
 
         const formDataToSend = new FormData();
         banners.forEach((banner, index) => {
-            formDataToSend.append(`alt_tag_desktop_${index}`, banner.alt_tag_desktop || '');
-            formDataToSend.append(`alt_tag_mobile_${index}`, banner.alt_tag_mobile || '');
-            formDataToSend.append(`alt_tag_tablet_${index}`, banner.alt_tag_tablet || '');
-            formDataToSend.append(`pageType_${index}`, banner.pageType || '');
+            formDataToSend.append(`alt_tag_desktop`, banner.alt_tag_desktop || '');
+            formDataToSend.append(`alt_tag_mobile`, banner.alt_tag_mobile || '');
+            formDataToSend.append(`alt_tag_tablet`, banner.alt_tag_tablet || '');
+            formDataToSend.append(`pageType`, banner.pageType || '');
 
             if (banner.desktop_image_path) {
-                formDataToSend.append(`desktop_image_${index}`, banner.desktop_image_path);
+                formDataToSend.append(`desktop_image`, banner.desktop_image_path);
             }
             if (banner.mobile_image_path) {
-                formDataToSend.append(`mobile_image_${index}`, banner.mobile_image_path);
+                formDataToSend.append(`mobile_image`, banner.mobile_image_path);
             }
             if (banner.tablet_image_path) {
-                formDataToSend.append(`tablet_image_${index}`, banner.tablet_image_path);
+                formDataToSend.append(`tablet_image`, banner.tablet_image_path);
             }
         });
 
@@ -137,9 +137,9 @@ export default function AddBannerImage() {
                                                             <label className="label_field">Desktop Image</label>
                                                             <input
                                                                 type="file"
-                                                                name={`desktop_image_${index}`}
+                                                                name={`desktop_image`}
                                                                 onChange={(e) => handleFileChange(index, e, 'desktop_image_path')}
-                                                                className={`form-control ${validationErrors[`desktop_image_${index}`] ? 'is-invalid' : ''}`}
+                                                                className={`form-control ${validationErrors[`desktop_image`] ? 'is-invalid' : ''}`}
                                                             />
                                                             {banner.desktop_image_path && (
                                                                 <img
@@ -156,10 +156,10 @@ export default function AddBannerImage() {
                                                                     name="alt_tag_desktop"
                                                                     value={banner.alt_tag_desktop}
                                                                     onChange={(e) => handleInputChange(index, e)}
-                                                                    className={`form-control ${validationErrors[`alt_tag_desktop_${index}`] ? 'is-invalid' : ''}`}
+                                                                    className={`form-control ${validationErrors[`alt_tag_desktop`] ? 'is-invalid' : ''}`}
                                                                 />
-                                                                {validationErrors[`alt_tag_desktop_${index}`] && (
-                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_desktop_${index}`]}</div>
+                                                                {validationErrors[`alt_tag_desktop`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_desktop`]}</div>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -172,9 +172,9 @@ export default function AddBannerImage() {
                                                             <label className="label_field">Mobile Image</label>
                                                             <input
                                                                 type="file"
-                                                                name={`mobile_image_${index}`}
+                                                                name={`mobile_image`}
                                                                 onChange={(e) => handleFileChange(index, e, 'mobile_image_path')}
-                                                                className={`form-control ${validationErrors[`mobile_image_${index}`] ? 'is-invalid' : ''}`}
+                                                                className={`form-control ${validationErrors[`mobile_image`] ? 'is-invalid' : ''}`}
                                                             />
                                                             {banner.mobile_image_path && (
                                                                 <img
@@ -191,10 +191,10 @@ export default function AddBannerImage() {
                                                                     name="alt_tag_mobile"
                                                                     value={banner.alt_tag_mobile}
                                                                     onChange={(e) => handleInputChange(index, e)}
-                                                                    className={`form-control ${validationErrors[`alt_tag_mobile_${index}`] ? 'is-invalid' : ''}`}
+                                                                    className={`form-control ${validationErrors[`alt_tag_mobile`] ? 'is-invalid' : ''}`}
                                                                 />
-                                                                {validationErrors[`alt_tag_mobile_${index}`] && (
-                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_mobile_${index}`]}</div>
+                                                                {validationErrors[`alt_tag_mobile`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_mobile`]}</div>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -207,9 +207,9 @@ export default function AddBannerImage() {
                                                             <label className="label_field">Tablet Image</label>
                                                             <input
                                                                 type="file"
-                                                                name={`tablet_image_${index}`}
+                                                                name={`tablet_image`}
                                                                 onChange={(e) => handleFileChange(index, e, 'tablet_image_path')}
-                                                                className={`form-control ${validationErrors[`tablet_image_${index}`] ? 'is-invalid' : ''}`}
+                                                                className={`form-control ${validationErrors[`tablet_image`] ? 'is-invalid' : ''}`}
                                                             />
                                                             {banner.tablet_image_path && (
                                                                 <img
@@ -226,10 +226,10 @@ export default function AddBannerImage() {
                                                                     name="alt_tag_tablet"
                                                                     value={banner.alt_tag_tablet}
                                                                     onChange={(e) => handleInputChange(index, e)}
-                                                                    className={`form-control ${validationErrors[`alt_tag_tablet_${index}`] ? 'is-invalid' : ''}`}
+                                                                    className={`form-control ${validationErrors[`alt_tag_tablet`] ? 'is-invalid' : ''}`}
                                                                 />
-                                                                {validationErrors[`alt_tag_tablet_${index}`] && (
-                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_tablet_${index}`]}</div>
+                                                                {validationErrors[`alt_tag_tablet`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_tablet`]}</div>
                                                                 )}
                                                             </div>
                                                         </div>

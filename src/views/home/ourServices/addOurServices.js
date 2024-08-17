@@ -100,12 +100,12 @@ const AddOurServices = () => {
                                                 <div className="col-md-12 form-group">
                                                     <label className="label_field">Description</label>
                                                     <ReactQuill
-    value={editorHtml}
-    onChange={handleEditorChange}
-    modules={AddOurServices.modules}
-    formats={AddOurServices.formats}
-    style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
-/>
+                                                        value={editorHtml}
+                                                        onChange={handleEditorChange}
+                                                        modules={AddOurServices.modules}
+                                                        formats={AddOurServices.formats}
+                                                        style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
+                                                    />
 
                                                     {validationErrors.description && (
                                                         <div className="invalid-feedback">{validationErrors.description}</div>

@@ -15,8 +15,7 @@ export const deleteBanner = async (id) => {
 
 export const fetchBannerByID = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/getBanner/${id}`);
-        
+        const response = await axios.get(`${API_URL}/getBanner/${id}`);      
         return response.data;
     } catch (error) {
         console.error('Error fetching  banner data:', error);
