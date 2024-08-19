@@ -26,7 +26,7 @@ export default function Testimonial() {
      const loadTestimonial = async () => {
             try {setLoading(true);
                 const TestimonialData = await fetchTestimonials();
-                console.log(TestimonialData.data)
+               
                 setTestimonial(TestimonialData.data);
             } catch (err) {
                 console.log('Failed to fetch data');
@@ -235,7 +235,7 @@ export default function Testimonial() {
                                                                   
                                                                     <td>
                                                                         <img 
-                                                                            src={Testimonial.image_path ? `${globals}/uploads/testimonials/${Testimonial.image_path}` : image} 
+                                                                            src={Testimonial.image_path ? `${Testimonial.image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={Testimonial.image_path} 
@@ -247,7 +247,7 @@ export default function Testimonial() {
                                                                     <td>
                                                                         {Testimonial.video_path ? (
                                                                             <a
-                                                                                href={`${globals}/uploads/testimonials/${Testimonial.video_path}`}
+                                                                                href={`${Testimonial.video_path}`}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                             >

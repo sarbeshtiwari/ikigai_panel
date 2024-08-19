@@ -56,31 +56,30 @@ export default function AddTestimonial() {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-
+    
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setValidationErrors(errors);
             return;
         }
-
+    
         const formDataToSend = new FormData();
         formDataToSend.append('alt_tag', formData.alt_tag);
         formDataToSend.append('videoURL', formData.videoURL);
-
+    
         if (image) {
             formDataToSend.append('image', image);
         }
         if (video) {
             formDataToSend.append('video', video);
         }
-
-        setLoading(true);  // Set loading to true when submission starts
-
+    
+        setLoading(true);
+    
         try {
-            let result;
-            result = await saveTestimonials(id, formDataToSend);
-
-            // Handle result based on your API response
+            console.log('FormData:', formDataToSend); // Check FormData
+            let result = await saveTestimonials(id, formDataToSend);
+    
             if (result.success) {
                 alert('Testimonial saved successfully');
                 navigate(-1);
@@ -90,9 +89,13 @@ export default function AddTestimonial() {
         } catch (error) {
             console.error('Error submitting form:', error);
         } finally {
-            setLoading(false);  // Set loading to false when submission completes
+            setLoading(false);
         }
     };
+    
+    
+    
+    
 
     return (
         <>

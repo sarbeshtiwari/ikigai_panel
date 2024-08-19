@@ -294,7 +294,7 @@ const OurServices = () => {
                                                             </div></td>
                                                             <td>
                                                             <img
-                                                                    src={services.image_path ? `${globals}/uploads/our_services/${services.image_path}` : '/path/to/default/image'}
+                                                                    src={services.image_path ? `${services.image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={services.alt_tag}

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = 'https://ikigai-panel-api.onrender.com/testimonials';
+// const API_URL = 'http://localhost:1000/testimonials';
 
 export const fetchTestimonials = async () => {
     try {
@@ -49,7 +50,7 @@ export const fetchTestimonialsByID = async (id) => {
 
 export const saveTestimonials = async (id, formDataToSend) => {
     try {
-        const url = id === 'add' ? `${API_URL}/addTestmonials` : `${API_URL}/updateTestimonials/${id}`;
+        const url = id === 'add' ? `${API_URL}/addTestimonials` : `${API_URL}/updateTestimonials/${id}`;
         const method = id === 'add' ? 'POST' : 'PUT';
         const response = await axios({
             method,

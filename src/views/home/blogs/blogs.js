@@ -260,13 +260,13 @@ export default function Blogs() {
                                                                     <td>{blog.blogTags}</td>
                                                                     <td>
                                                                         <img 
-                                                                            src={blog.image_path ? `${globals}/uploads/blogs/${blog.image_path}` : image} 
+                                                                            src={blog.image_path ? `${blog.image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={blog.blogsImage} 
                                                                             width="50" 
                                                                             height="50" 
-                                                                            onClick={() => handleShow(`${globals}/uploads/blogs/${blog.image_path}`)}
+                                                                            onClick={() => handleShow(`${blog.image_path}`)}
                                                                         />
                                                                     </td>
                                                                     <td>{blog.blogName}</td>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:1000/blog';
+const API_URL = 'https://ikigai-panel-api.onrender.com/blog';
+// const API_URL = 'http://localhost:1000/blog';
 
 export const fetchBlogs = async () => {
     try {
@@ -48,6 +49,7 @@ export const fetchBlogsByID = async (id) => {
 
 export const saveBlogs = async (id, formDataToSend) => {
     try {
+       
         const url = id === 'add' ? `${API_URL}/upload` : `${API_URL}/update/${id}`;
         const method = id === 'add' ? 'POST' : 'PUT';
         const response = await axios({
