@@ -3,11 +3,22 @@ import Sidebar from '../sidebar';
 import { Link } from 'react-router-dom';
 import image from '../../../assets/images/logo.png';
 import { fetchHomeBanner, updateHomeBannerStatus, deleteHomeBanner, globals } from '../../../controllers/home_banner/home_banner';
+import ImageModal from '../../widgets/imageModel';
 
 export default function HomeBanner() {
     const [homeBanner, setHomeBanner] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
     useEffect(() => {
         const loadHomeBanner = async () => {
@@ -60,6 +71,7 @@ export default function HomeBanner() {
     };
 
     return (
+        <>
         <div>
             <Sidebar />
             <div>
@@ -108,35 +120,38 @@ export default function HomeBanner() {
                                                                     <td>{index + 1}</td>
                                                                    
                                                                     <td>
-                                                                        <img 
-                                                                            src={banner.desktop_image_path ? `${globals}/uploads/home_banner/desktop/${banner.desktop_image_path}` : image} 
-                                                                            className="rounded-circle" 
-                                                                            style={{ objectFit: 'cover' }} 
-                                                                            alt={banner.alt_tag} 
-                                                                            width="50" 
-                                                                            height="50" 
-                                                                        />
-                                                                    </td>
-                                                                    <td>
-                                                                        <img 
-                                                                            src={banner.tablet_image_path ? `${globals}/uploads/home_banner/tablet/${banner.tablet_image_path}` : image} 
-                                                                            className="rounded-circle" 
-                                                                            style={{ objectFit: 'cover' }} 
-                                                                            alt={banner.alt_tag} 
-                                                                            width="50" 
-                                                                            height="50" 
-                                                                        />
-                                                                    </td>
-                                                                    <td>
-                                                                        <img 
-                                                                            src={banner.mobile_image_path ? `${globals}/uploads/home_banner/mobile/${banner.mobile_image_path}` : image} 
-                                                                            className="rounded-circle" 
-                                                                            style={{ objectFit: 'cover' }} 
-                                                                            alt={banner.alt_tag} 
-                                                                            width="50" 
-                                                                            height="50" 
-                                                                        />
-                                                                    </td>
+                                                                <img
+                                                                    src={banner.desktop_image_path ? `${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                    onClick={() => handleShow(`${banner.desktop_image_path}`, banner.alt_tag)}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <img
+                                                                    src={banner.tablet_image_path ? `${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                    onClick={() => handleShow(`${banner.tablet_image_path}`, banner.alt_tag)}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <img
+                                                                    src={banner.mobile_image_path ? `${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={banner.alt_tag}
+                                                                    width="50"
+                                                                    height="50"
+                                                                    onClick={() => handleShow(`${banner.mobile_image_path}`, banner.alt_tag)}
+                                                                />
+                                                            </td>
                                                                     {/* <td>{banner.alt_tag_desktop}</td> */}
                                                                     <td>
                                                                         
@@ -183,5 +198,12 @@ export default function HomeBanner() {
                 </div>
             </div>
         </div>
+        <ImageModal 
+         show={showModal} 
+         handleClose={handleClose} 
+         imageUrl={modalImageUrl} 
+         altText={modalAltText} 
+     />
+        </>
     );
 }

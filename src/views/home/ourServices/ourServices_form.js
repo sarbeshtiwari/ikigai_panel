@@ -90,10 +90,10 @@ const useServicesForm = (id) => {
         setLoading(true);
         try {
             await saveOurServices(id, formDataToSend);
-            alert('Meta info saved successfully');
+            alert('Our Services saved successfully');
             navigate(-1);
         } catch (error) {
-            alert(`Failed to save meta info: ${error.message}`);
+            alert(`Failed to save info: ${error.message}`);
         } finally {
             setLoading(false);
         }

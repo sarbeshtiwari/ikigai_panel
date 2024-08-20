@@ -1,9 +1,11 @@
 import axios from 'axios';
 
 export const globals = `https://ikigai-panel-api.onrender.com`;
+const API_URL1 = 'http://localhost:1000';
+
 
 const API_URL = 'https://ikigai-panel-api.onrender.com/homeBanner';
-const API_URL1 = 'http://localhost:1000';
+
 
 export const fetchHomeBanner = async () => {
     try {

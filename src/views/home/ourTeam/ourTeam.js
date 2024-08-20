@@ -5,6 +5,7 @@ import { deleteOurTeam, fetchOurTeam, updateOurTeamStatus } from '../../../contr
 import Overview from '../../widgets/overview';
 import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
 import { globals } from '../../../controllers/home_banner/home_banner';
+import ImageModal from '../../widgets/imageModel';
 
 const OurTeam = () => {
     const [team, setTeams] = useState([]);
@@ -13,6 +14,16 @@ const OurTeam = () => {
     const [error, setError] = useState('');
     const [selectedDetail, setSelectedDetail] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
     const openModal = (team) => {
         setSelectedDetail(team);
@@ -178,32 +189,35 @@ const OurTeam = () => {
                                                             <td>{index + 1}</td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.desktop_image_path ? `${banner.desktop_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.desktop_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.tablet_image_path ? `${banner.tablet_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.tablet_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.mobile_image_path ? `${banner.mobile_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.mobile_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -245,6 +259,7 @@ const OurTeam = () => {
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Name</th>
+                                                        <th>Image</th>
                                                         <th>Designation</th>
                                                         <th>Description</th>
                                                         <th>Current Status</th>
@@ -256,6 +271,15 @@ const OurTeam = () => {
                                                         <tr key={team.id}>
                                                             <td>{index + 1}</td>
                                                             <td>{team.name}</td>
+                                                            <td><img
+                                                                    src={team.image_path}
+                                                                    className="rounded-circle"
+                                                                    style={{ objectFit: 'cover' }}
+                                                                    alt={team.name}
+                                                                    width="50"
+                                                                    height="50"
+                                                                    onClick={() => handleShow(`${team.image_path}`)}
+                                                                /></td>
                                                             <td>{team.designation}</td>
                                                             <td><div>
                                                                                 <button onClick={() => openModal(team)} className="btn btn-success btn-xs">
@@ -306,6 +330,12 @@ const OurTeam = () => {
                     onClose={closeModal} 
                     description={selectedDetail ? selectedDetail.description : ''} 
                 />
+                 <ImageModal 
+         show={showModal} 
+         handleClose={handleClose} 
+         imageUrl={modalImageUrl} 
+         altText={modalAltText} 
+     />
         </>
     );
 };

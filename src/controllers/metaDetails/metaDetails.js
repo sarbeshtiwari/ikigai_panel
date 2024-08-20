@@ -2,12 +2,12 @@ import axios from 'axios';
 
 const API_URL = 'https://ikigai-panel-api.onrender.com/meta';
 
-export const saveMetaDetails = async (id, formDataToSend) => {
+export const saveMetaDetails = async (id, formDataToSend, already_data) => {
     try {
-        // const url = id === 'add'  ? `${API_URL}/upload` : `${API_URL}/update/${id}`;
-        // const method = id === 'add' ? 'POST' : 'PUT';
-        const url =  `${API_URL}/upload`;
-        const method = 'POST';
+        const url = already_data === 'No'  ? `${API_URL}/upload` : `${API_URL}/update/${id}`;
+        const method = already_data === 'No' ? 'POST' : 'PUT';
+        // const url =  `${API_URL}/upload`;
+        // const method = 'POST';
         
         const response = await axios({
             method,

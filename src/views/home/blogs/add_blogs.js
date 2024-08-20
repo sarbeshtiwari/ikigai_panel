@@ -16,7 +16,6 @@ export default function AddBlogs() {
         alt_tag: '',
         content: '',
         schema_data: '',
-        image: ''
     });
     const [image, setImage] = useState(null);
 
@@ -58,33 +57,26 @@ export default function AddBlogs() {
         e.preventDefault();
       
         const formDataToSend = new FormData();
-        formDataToSend.append('blogName', formData.blogName || '');
-        formDataToSend.append('blogBy', formData.blogBy || '');
-        formDataToSend.append('blogDate', formData.blogDate || '');
-        formDataToSend.append('blogTags', formData.blogTags || '');
+        formDataToSend.append('blogName', formData.blogName || ' ');
+        formDataToSend.append('blogBy', formData.blogBy || ' ');
+        formDataToSend.append('blogDate', formData.blogDate || ' ');
+        formDataToSend.append('blogTags', formData.blogTags || ' ');
         formDataToSend.append('blogLink', formData.blogLink || '');
-        formDataToSend.append('alt_tag', formData.alt_tag || '');
-        formDataToSend.append('content', formData.content || '');
+        formDataToSend.append('alt_tag', formData.alt_tag || ' ');
+        formDataToSend.append('content', formData.content || ' ');
         formDataToSend.append('schema_data', formData.schema_data || '');
         if (image) {
-            formDataToSend.append('image', image);
+          formDataToSend.append('image', image);
         }
       
         try {
-            console.log(formData)
-            console.log(formDataToSend)
-    
-            await saveBlogs(id, formDataToSend);
-            alert('Blog saved successfully');
-            navigate(-1);
+          await saveBlogs(id, formDataToSend);
+          alert('Blog saved successfully');
+          navigate(-1);
         } catch (error) {
-            console.error('Error submitting form:', error);
-            alert(`Failed to save blog: ${error.message}`);
+          alert(`Failed to save blog: ${error.message}`);
         }
-    };
-    
-    
-    
+      };
       
 
     const getImagePreviewUrl = () => {

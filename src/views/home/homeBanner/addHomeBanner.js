@@ -6,6 +6,7 @@ import { addHomeBanner, fetchHomeBannerByID, saveHomeBanner } from '../../../con
 export default function AddHomeBanner() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [validationErrors, setValidationErrors] = useState({});
 
     const [formData, setFormData] = useState({
         banners: [
@@ -61,8 +62,41 @@ export default function AddHomeBanner() {
         }
     };
 
+    const validateForm = () => {
+        const errors = {};
+        let hasImage = false;
+
+        formData.banners.forEach((banner, index) => {
+            if (banner.desktop_image_path && !banner.alt_tag_desktop) {
+                errors[`alt_tag_desktop`] = 'Alt tag for desktop image is required';
+            }
+            if (banner.mobile_image_path && !banner.alt_tag_mobile) {
+                errors[`alt_tag_mobile`] = 'Alt tag for mobile image is required';
+            }
+            if (banner.tablet_image_path && !banner.alt_tag_tablet) {
+                errors[`alt_tag_tablet`] = 'Alt tag for tablet image is required';
+            }
+
+            if (banner.desktop_image_path || banner.mobile_image_path || banner.tablet_image_path) {
+                hasImage = true;
+            }
+        });
+
+        if (!hasImage) {
+            errors.general = 'At least one image is required';
+        }
+
+        return errors;
+    };
+
     const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // const errors = validateForm();
+    //     if (Object.keys(errors).length > 0) {
+    //         setValidationErrors(errors);
+    //         return;
+    //     }
 
     const formDataToSend = new FormData();
     formData.banners.forEach((banner, index) => {
@@ -129,7 +163,7 @@ export default function AddHomeBanner() {
                                                                     name="desktop_image"
                                                                     id={`desktop_image_${index}`}
                                                                     onChange={(e) => handleFileChange(index, e, 'desktop_image')}
-                                                                    className="form-control"
+                                                                    className={`form-control ${validationErrors[`desktop_image`] ? 'is-invalid' : ''}`}
                                                                 />
                                                                 {banner.desktop_image_path && !images[index].desktop_image && (
                                                                     <img
@@ -147,8 +181,11 @@ export default function AddHomeBanner() {
                                                                         id={`alt_tag_desktop_${index}`}
                                                                         value={banner.alt_tag_desktop}
                                                                         onChange={(e) => handleInputChange(index, e)}
-                                                                        className="form-control"
+                                                                        className={`form-control ${validationErrors[`alt_tag_desktop`] ? 'is-invalid' : ''}`}
                                                                     />
+                                                                    {validationErrors[`alt_tag_desktop`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_desktop`]}</div>
+                                                                )}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -163,7 +200,7 @@ export default function AddHomeBanner() {
                                                                     name="mobile_image"
                                                                     id={`mobile_image_${index}`}
                                                                     onChange={(e) => handleFileChange(index, e, 'mobile_image')}
-                                                                    className="form-control"
+                                                                    className={`form-control ${validationErrors[`mobile_image`] ? 'is-invalid' : ''}`}
                                                                 />
                                                                 {banner.mobile_image_path && !images[index].mobile_image && (
                                                                     <img
@@ -181,8 +218,11 @@ export default function AddHomeBanner() {
                                                                         id={`alt_tag_mobile_${index}`}
                                                                         value={banner.alt_tag_mobile}
                                                                         onChange={(e) => handleInputChange(index, e)}
-                                                                        className="form-control"
+                                                                        className={`form-control ${validationErrors[`alt_tag_mobile`] ? 'is-invalid' : ''}`}
                                                                     />
+                                                                     {validationErrors[`alt_tag_mobile`] && (
+                                                                    <div className="invalid-feedback">{validationErrors[`alt_tag_mobile`]}</div>
+                                                                )}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -197,7 +237,7 @@ export default function AddHomeBanner() {
                                                                     name="tablet_image"
                                                                     id={`tablet_image_${index}`}
                                                                     onChange={(e) => handleFileChange(index, e, 'tablet_image')}
-                                                                    className="form-control"
+                                                                    className={`form-control ${validationErrors[`tablet_image`] ? 'is-invalid' : ''}`}
                                                                 />
                                                                 {banner.tablet_image_path && !images[index].tablet_image && (
                                                                     <img
@@ -215,8 +255,11 @@ export default function AddHomeBanner() {
                                                                         id={`alt_tag_tablet_${index}`}
                                                                         value={banner.alt_tag_tablet}
                                                                         onChange={(e) => handleInputChange(index, e)}
-                                                                        className="form-control"
-                                                                    />
+                                                                        className={`form-control ${validationErrors[`alt_tag_tablet`] ? 'is-invalid' : ''}`}
+                                                                        />
+                                                                        {validationErrors[`alt_tag_tablet`] && (
+                                                                            <div className="invalid-feedback">{validationErrors[`alt_tag_tablet`]}</div>
+                                                                        )}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -235,6 +278,11 @@ export default function AddHomeBanner() {
                                                     )}
                                                 </div>
                                             ))}
+                                            {validationErrors.general && (
+                                            <div className="alert alert-danger">
+                                                {validationErrors.general}
+                                            </div>
+                                        )}
 
                                             {/* <button
                                                 type="button"

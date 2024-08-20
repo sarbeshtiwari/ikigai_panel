@@ -5,6 +5,7 @@ import image from '../../../assets/images/logo.png';
 import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
 import { deleteTestimonials, fetchTestimonials, updateTestimonialsStatus } from '../../../controllers/testimonials/testimonials';
 import { globals } from '../../../controllers/home_banner/home_banner';
+import ImageModal from '../../widgets/imageModel';
 
 
 export default function Testimonial() {
@@ -12,6 +13,16 @@ export default function Testimonial() {
     const [bannerImage, setBannerImage] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -109,6 +120,7 @@ export default function Testimonial() {
     };
 
     return (
+        <>
         <div>
             <Sidebar />
             <div>
@@ -153,32 +165,35 @@ export default function Testimonial() {
                                                             <td>{index + 1}</td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.desktop_image_path ? `${banner.desktop_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.desktop_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.tablet_image_path ? `${banner.tablet_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.tablet_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.mobile_image_path ? `${banner.mobile_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.mobile_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -241,6 +256,7 @@ export default function Testimonial() {
                                                                             alt={Testimonial.image_path} 
                                                                             width="50" 
                                                                             height="50" 
+                                                                            onClick={() => handleShow(`${Testimonial.image_path}`)}
                                                                         />
                                                                     </td>
                                                                     <td>{Testimonial.alt_tag}</td>
@@ -303,5 +319,12 @@ export default function Testimonial() {
                 </div>
             </div>
         </div>
+        <ImageModal 
+         show={showModal} 
+         handleClose={handleClose} 
+         imageUrl={modalImageUrl} 
+         altText={modalAltText} 
+     />
+     </>
     );
 }

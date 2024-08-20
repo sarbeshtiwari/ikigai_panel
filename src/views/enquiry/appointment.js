@@ -177,6 +177,8 @@ const Appointment = () => {
                                                             <span>PDF</span>
                                                         </button>
                                                     </div>
+                                                    {loading && <div className="loading">Loading...</div>}
+                                                    {error && <div className="alert alert-danger">{error}</div>}
 
                                                     <div id="pjdataTable_filter" className="dataTables_filter">
                                                         <label>Search:<input type="search" placeholder="" aria-controls="pjdataTable" /></label>

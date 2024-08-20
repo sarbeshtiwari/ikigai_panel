@@ -12,6 +12,7 @@ const useAboutForm = (id) => {
     const [editorHtml, setEditorHtml] = useState('');
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    
     const navigate = useNavigate();
 
     useEffect(() => {

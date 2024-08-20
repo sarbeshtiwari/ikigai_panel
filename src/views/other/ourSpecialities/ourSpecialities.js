@@ -5,6 +5,7 @@ import image from '../../../assets/images/logo.png';
 import { deleteOurSpeciality, fetchOurSpeciality, updateOurSpecialityStatus } from '../../../controllers/ourSpecialities/ourSpecialities';
 import { globals } from '../../../controllers/home_banner/home_banner';
 import { deleteBanner, fetchBannerByID, updateBannerStatus } from '../../../controllers/bannerImage/bannerImage';
+import ImageModal from '../../widgets/imageModel';
 
 
 export default function Specialities() {
@@ -12,6 +13,16 @@ export default function Specialities() {
     const [bannerImage, setBannerImage] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState('');
+    const [modalAltText, setModalAltText] = useState('');
+
+    const handleShow = (imageUrl, altText) => {
+        setModalImageUrl(imageUrl);
+        setModalAltText(altText);
+        setShowModal(true);
+    };
+    const handleClose = () => setShowModal(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -113,6 +124,7 @@ export default function Specialities() {
     };
 
     return (
+        <>
         <div>
             <Sidebar />
             <div>
@@ -157,32 +169,35 @@ export default function Specialities() {
                                                             <td>{index + 1}</td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.desktop_image_path ? `${banner.desktop_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.desktop_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.tablet_image_path ? `${banner.tablet_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.tablet_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.mobile_image_path ? `${banner.mobile_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
+                                                                    onClick={() => handleShow(`${banner.mobile_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
@@ -239,12 +254,14 @@ export default function Specialities() {
                                                                     <td>{speciality.heading}</td>
                                                                     <td>
                                                                         <img 
-                                                                            src={speciality.image_path ? `${globals}/uploads/our_specialities/${speciality.image_path}` : image} 
+                                                                            src={speciality.image_path ? `${speciality.image_path}` : image} 
                                                                             className="rounded-circle" 
                                                                             style={{ objectFit: 'cover' }} 
                                                                             alt={speciality.image} 
                                                                             width="50" 
                                                                             height="50" 
+                                                                            onClick={() => handleShow(`${speciality.image_path}`)}
+
                                                                         />
                                                                     </td>
                                                                     <td>{speciality.content.slice(0, 20)}</td>
@@ -291,5 +308,12 @@ export default function Specialities() {
                 </div>
             </div>
         </div>
+         <ImageModal 
+         show={showModal} 
+         handleClose={handleClose} 
+         imageUrl={modalImageUrl} 
+         altText={modalAltText} 
+     />
+     </>
     );
 }

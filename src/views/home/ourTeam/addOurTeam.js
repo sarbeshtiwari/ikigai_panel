@@ -84,7 +84,7 @@ const AddOurTeam = () => {
                                                         type="file"
                                                         name="image"
                                                         className="form-control"
-                                                        value={formData.image}
+                                                      
                                                         onChange={handleInputChange}
                                                     />
                                                 </div>

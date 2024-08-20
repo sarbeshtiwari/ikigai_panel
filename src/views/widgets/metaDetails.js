@@ -13,21 +13,39 @@ export default function MetaDetails() {
         meta_description: '',
         pageType: id
     });
+    const [already_data, setAlreadyData] = useState('No')
 
     const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
-        fetchMetaDetailsByID(id)
-            .then(data => {
-                // Ensure data matches the formData structure
-                setFormData({
-                    meta_title: data.meta_title || '',
-                    meta_keyword: data.meta_keyword || '',
-                    meta_description: data.meta_description || '',
-                    pageType: id
-                });
-            })
-            .catch(console.error);
+        const fetchData = async () => {
+            try {
+                const data = await fetchMetaDetailsByID(id);
+                
+                // If data exists, update formData and alreadyData
+                if (data) {
+                    setFormData({
+                        meta_title: data.meta_title || '',
+                        meta_keyword: data.meta_keyword || '',
+                        meta_description: data.meta_description || '',
+                        pageType: id
+                    });
+                    setAlreadyData('Yes');
+                } else {
+                    setFormData({
+                        meta_title: '',
+                        meta_keyword: '',
+                        meta_description: '',
+                        pageType: id
+                    });
+                    setAlreadyData('No');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -63,7 +81,7 @@ export default function MetaDetails() {
 
         try {
             console.log(formData); // Check if formData is logged correctly
-            await saveMetaDetails(id, formData);
+            await saveMetaDetails(id, formData, already_data);
             alert('Meta info saved successfully');
             navigate(-1);
         } catch (error) {

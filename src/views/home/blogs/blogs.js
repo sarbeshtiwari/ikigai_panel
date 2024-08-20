@@ -174,35 +174,35 @@ export default function Blogs() {
                                                             <td>{index + 1}</td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.desktop_image_path ? `${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.desktop_image_path ? `${banner.desktop_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
-                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/desktop/${banner.desktop_image_path}`, banner.alt_tag)}
+                                                                    onClick={() => handleShow(`${banner.desktop_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.tablet_image_path ? `${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.tablet_image_path ? `${banner.tablet_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
-                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/tablet/${banner.tablet_image_path}`, banner.alt_tag)}
+                                                                    onClick={() => handleShow(`${banner.tablet_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>
                                                                 <img
-                                                                    src={banner.mobile_image_path ? `${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}` : '/path/to/default/image'}
+                                                                    src={banner.mobile_image_path ? `${banner.mobile_image_path}` : '/path/to/default/image'}
                                                                     className="rounded-circle"
                                                                     style={{ objectFit: 'cover' }}
                                                                     alt={banner.alt_tag}
                                                                     width="50"
                                                                     height="50"
-                                                                    onClick={() => handleShow(`${globals}/uploads/banner_image/mobile/${banner.mobile_image_path}`, banner.alt_tag)}
+                                                                    onClick={() => handleShow(`${banner.mobile_image_path}`, banner.alt_tag)}
                                                                 />
                                                             </td>
                                                             <td>

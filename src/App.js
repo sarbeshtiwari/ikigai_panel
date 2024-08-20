@@ -25,6 +25,7 @@ import Query from "./views/enquiry/user_query";
 import Appointment from "./views/enquiry/appointment";
 import PrivateRoute from './PrivateRoute';
 import './App.css';
+import HeaderFooter from './views/widgets/header_footer';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
         <Route path="/bannerImage/:id" element={<PrivateRoute element={<AddBannerImage />} />} />
         <Route path="/userQuery" element={<PrivateRoute element={<Query />} />} />
         <Route path="/appointment" element={<PrivateRoute element={<Appointment />} />} />
+        <Route path="/headerFooter" element={<PrivateRoute element={<HeaderFooter />} />} />
       </Routes>
     </HashRouter>
   );
