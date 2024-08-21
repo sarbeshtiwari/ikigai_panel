@@ -35,15 +35,22 @@ const useServicesForm = (id) => {
         }
     }, [id]);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = async (e) => {
         const { name, value, type, files } = e.target;
 
         if (type === 'file') {
             const file = files[0];
             if (name === 'image') {
-                setImage(file);
+                const isValid = await isValidImage(file);
+                if (isValid) {
+                    setImage(file);
+                }
             } else if (name === 'home_image') {
-                setHomeImage(file);
+                const isValid = await isValidImage(file);
+                if (isValid) {
+                    setHomeImage(file);
+                }
+                
             }
         } else {
             setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -66,9 +73,65 @@ const useServicesForm = (id) => {
         if (!editorHtml.trim()) {
             errors.description = 'Description is required';
         }
+        if (!image) errors.image = 'Image is required';
+        if (!homeImage) errors.home_image = 'Image is required';
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
+
+    const isValidImage = async (file) => {
+        const allowedTypes = ["image/png", "image/webp", "image/jpeg", "image/svg+xml"];
+        const reader = new FileReader();
+    
+        return new Promise((resolve) => {
+            reader.onloadend = () => {
+                const arr = new Uint8Array(reader.result);
+                let fileType = "";
+                
+                // Check for image file types based on file headers
+                let header = "";
+                for (let i = 0; i < Math.min(arr.length, 4); i++) {
+                    header += arr[i].toString(16);
+                }
+    
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        // Additional SVG validation
+                        const svgHeader = new TextDecoder().decode(arr.subarray(0, 100));
+                        if (svgHeader.startsWith('<?xml') || svgHeader.startsWith('<svg')) {
+                            fileType = "image/svg+xml";
+                        } else {
+                            fileType = "unknown";
+                        }
+                        break;
+                }
+    
+                if (!allowedTypes.includes(fileType)) {
+                    setValidationErrors(prevErrors => ({ ...prevErrors, image: "Only JPG, JPEG, WEBP, SVG, and PNG formats are allowed." }));
+                    resolve(false);
+                } else {
+                    setValidationErrors(prevErrors => ({ ...prevErrors, image: null }));
+                    resolve(true);
+                }
+            };
+    
+            reader.readAsArrayBuffer(file);
+        });
+    };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();

@@ -38,7 +38,7 @@ export default function Login() {
                 localStorage.setItem('authToken', result.token); // Store the token from response
                 console.log("Navigating to /dashboard");
                 setStatus("User is logged in");
-                navigate("/dashboard");
+                navigate("/dashboard", { replace: true });
             } else {
                 setStatus("Login failed");
             }

@@ -17,45 +17,112 @@ export default function AddBlogs() {
         content: '',
         schema_data: '',
     });
-    const [image, setImage] = useState(null);
+    const [file, setFile] = useState(null);
+    const [previewURL, setPreviewURL] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [statusMessage, setStatusMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (id !== 'add') {
             fetchBlogsByID(id)
                 .then(data => {
-                    // Set form data and image
                     setFormData({
                         blogName: data.blogName,
                         blogBy: data.blogBy,
                         blogDate: data.blogDate,
                         blogTags: data.blogTags,
-                        blogLink: data.blogLink || '', // Handle empty blogLink
+                        blogLink: data.blogLink || '',
                         alt_tag: data.alt_tag,
                         content: data.content,
-                        schema_data: data.schema_data || '', // Handle empty schema_data
+                        schema_data: data.schema_data || '',
                     });
-                    setImage(null); // Optionally reset image if needed
+                    setFile(null);
+                    setPreviewURL(null);
                 })
                 .catch(console.error);
         }
     }, [id]);
 
+    const validateForm = () => {
+        const formErrors = {};
+        if (!formData.blogName.trim()) formErrors.blogName = 'Blog Name cannot be empty.';
+        if (!formData.blogBy.trim()) formErrors.blogBy = 'Blog By cannot be empty.';
+        if (!formData.blogDate.trim()) formErrors.blogDate = 'Blog Date cannot be empty.';
+        if (!formData.content.trim()) formErrors.content = 'Content cannot be empty.';
+        if (!formData.alt_tag.trim()) formErrors.alt_tag = 'Alt Tag cannot be empty.';
+        if (!file) formErrors.file = 'Image cannot be empty.';
+
+        setErrors(formErrors);
+        return formErrors;
+    };
+
     const handleInputChange = (e) => {
-        const { name, value, type, files } = e.target;
-    
-        if (type === 'file') {
-            setImage(files[0]); // Set the image file
-        } else {
-            setFormData(prevData => ({
-                ...prevData,
-                [name]: value
-            }));
+        const { name, value } = e.target;
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const arr = (new Uint8Array(reader.result)).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16);
+                }
+
+                let fileType = "";
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        fileType = "unknown";
+                        break;
+                }
+
+                const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+                if (!allowedTypes.includes(fileType)) {
+                    setErrors(prevErrors => ({ ...prevErrors, file: "Only JPG, JPEG, WEBP, and PNG formats are allowed." }));
+                    setFile(null);
+                    setPreviewURL(null);
+                } else {
+                    setErrors(prevErrors => ({ ...prevErrors, file: null }));
+                    setFile(selectedFile);
+                    const previewReader = new FileReader();
+                    previewReader.onloadend = () => {
+                        setPreviewURL(previewReader.result);
+                    };
+                    previewReader.readAsDataURL(selectedFile);
+                }
+            };
+            reader.readAsArrayBuffer(selectedFile);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-      
+
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            return;
+        }
+
         const formDataToSend = new FormData();
         formDataToSend.append('blogName', formData.blogName || ' ');
         formDataToSend.append('blogBy', formData.blogBy || ' ');
@@ -65,22 +132,21 @@ export default function AddBlogs() {
         formDataToSend.append('alt_tag', formData.alt_tag || ' ');
         formDataToSend.append('content', formData.content || ' ');
         formDataToSend.append('schema_data', formData.schema_data || '');
-        if (image) {
-          formDataToSend.append('image', image);
+        if (file) {
+            formDataToSend.append('image', file);
         }
-      
-        try {
-          await saveBlogs(id, formDataToSend);
-          alert('Blog saved successfully');
-          navigate(-1);
-        } catch (error) {
-          alert(`Failed to save blog: ${error.message}`);
-        }
-      };
-      
 
-    const getImagePreviewUrl = () => {
-        return image ? URL.createObjectURL(image) : ''; // Show preview for the selected image
+        setIsSubmitting(true);
+
+        try {
+            await saveBlogs(id, formDataToSend);
+            alert('Blog saved successfully');
+            navigate(-1);
+        } catch (error) {
+            setStatusMessage(`Failed to save blog: ${error.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -109,6 +175,7 @@ export default function AddBlogs() {
                                         </button>
                                     </div>
                                     <div className="full price_table padding_infor_info">
+                                        <span className="status text-danger">{statusMessage}</span>
                                         <form onSubmit={handleSubmit} id="add_blogs" encType="multipart/form-data">
                                             <div className="form-row">
                                                 <div className="col-md-12 form-group">
@@ -118,9 +185,12 @@ export default function AddBlogs() {
                                                         name="blogName"
                                                         value={formData.blogName}
                                                         onChange={handleInputChange}
-                                                        className="form-control"
+                                                        className={`form-control ${errors.blogName ? 'is-invalid' : ''}`}
                                                         required
                                                     />
+                                                    {errors.blogName && (
+                                                        <div className="invalid-feedback">{errors.blogName}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Blog By</label>
@@ -129,9 +199,12 @@ export default function AddBlogs() {
                                                         name="blogBy"
                                                         value={formData.blogBy}
                                                         onChange={handleInputChange}
-                                                        className="form-control"
+                                                        className={`form-control ${errors.blogBy ? 'is-invalid' : ''}`}
                                                         required
                                                     />
+                                                    {errors.blogBy && (
+                                                        <div className="invalid-feedback">{errors.blogBy}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Blog Date</label>
@@ -140,9 +213,12 @@ export default function AddBlogs() {
                                                         name="blogDate"
                                                         value={formData.blogDate}
                                                         onChange={handleInputChange}
-                                                        className="form-control"
+                                                        className={`form-control ${errors.blogDate ? 'is-invalid' : ''}`}
                                                         required
                                                     />
+                                                    {errors.blogDate && (
+                                                        <div className="invalid-feedback">{errors.blogDate}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Blog Tags</label>
@@ -169,13 +245,16 @@ export default function AddBlogs() {
                                                     <input
                                                         type="file"
                                                         name="image"
-                                                        onChange={handleInputChange}
-                                                        className="form-control"
+                                                        onChange={handleFileChange}
+                                                        className={`form-control ${errors.file ? 'is-invalid' : ''}`}
                                                         required
                                                     />
-                                                    {image && (
+                                                    {errors.file && (
+                                                        <div className="invalid-feedback">{errors.file}</div>
+                                                    )}
+                                                    {previewURL && (
                                                         <img
-                                                            src={getImagePreviewUrl()}
+                                                            src={previewURL}
                                                             alt="Blog Image"
                                                             className="img-thumbnail mt-2"
                                                             width="120"
@@ -190,37 +269,49 @@ export default function AddBlogs() {
                                                         name="alt_tag"
                                                         value={formData.alt_tag}
                                                         onChange={handleInputChange}
-                                                        className="form-control"
+                                                        className={`form-control ${errors.alt_tag ? 'is-invalid' : ''}`}
                                                         required
                                                     />
+                                                    {errors.alt_tag && (
+                                                        <div className="invalid-feedback">{errors.alt_tag}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-12 form-group">
                                                     <label className="label_field">Content</label>
                                                     <textarea
-                                                        rows={'6'}
                                                         name="content"
                                                         value={formData.content}
                                                         onChange={handleInputChange}
-                                                        className="form-control"
+                                                        className={`form-control ${errors.content ? 'is-invalid' : ''}`}
+                                                        rows="5"
                                                         required
-                                                    ></textarea>
+                                                    />
+                                                    {errors.content && (
+                                                        <div className="invalid-feedback">{errors.content}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-12 form-group">
-                                                    <label className="label_field">Schema</label>
+                                                    <label className="label_field">Schema Data</label>
                                                     <textarea
-                                                        rows={'6'}
                                                         name="schema_data"
                                                         value={formData.schema_data}
                                                         onChange={handleInputChange}
                                                         className="form-control"
-                                                    ></textarea>
+                                                        rows="5"
+                                                    />
                                                 </div>
-                                            </div>
-
-                                            <div className="form-group margin_0">
-                                                <button className="main_bt" type="submit">
-                                                    {id === 'add' ? 'Submit' : 'Update'}
+                                                <div className="col-md-12 form-group">
+                                                <button
+                                                    type="submit"
+                                                    className="main_bt"
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {id === 'add' 
+                                                        ? (isSubmitting ? 'Submitting...' : 'Submit') 
+                                                        : (isSubmitting ? 'Updating...' : 'Update')}
                                                 </button>
+
+                                                </div>
                                             </div>
                                         </form>
                                     </div>

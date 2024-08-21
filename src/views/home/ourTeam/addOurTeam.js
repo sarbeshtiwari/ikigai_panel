@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../sidebar';
 import ReactQuill from 'react-quill';
 import useTeamForm from './ourTeam_form';
@@ -11,11 +11,12 @@ const AddOurTeam = () => {
         formData,
         editorHtml,
         statusMessage,
+        validationErrors,
         handleInputChange,
         handleEditorChange,
-        handleSubmit
+        handleSubmit,
+        loading
     } = useTeamForm(id);
-
 
     return (
         <div>
@@ -34,12 +35,12 @@ const AddOurTeam = () => {
                             <div className="col-md-12">
                                 <div className="white_shd full margin_bottom_30">
                                     <div className="full graph_head">
-                                    <button 
-                                    className="btn btn-primary btn-xs float-right"
-                                    onClick={() => navigate(-1)}
-                                >
-                                    Back
-                                </button>
+                                        <button 
+                                            className="btn btn-primary btn-xs float-right"
+                                            onClick={() => navigate(-1)}
+                                        >
+                                            Back
+                                        </button>
                                     </div>
                                     
                                     <div className="full price_table padding_infor_info">
@@ -51,20 +52,26 @@ const AddOurTeam = () => {
                                                     <input
                                                         type="text"
                                                         name="name"
-                                                        className="form-control"
+                                                        className={`form-control ${validationErrors.name ? 'is-invalid' : ''}`}
                                                         value={formData.name}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {validationErrors.name && (
+                                                        <div className="invalid-feedback">{validationErrors.name}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Designation</label>
                                                     <input
                                                         type="text"
                                                         name="designation"
-                                                        className="form-control"
+                                                        className={`form-control ${validationErrors.designation ? 'is-invalid' : ''}`}
                                                         value={formData.designation}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {validationErrors.designation && (
+                                                        <div className="invalid-feedback">{validationErrors.designation}</div>
+                                                    )}
                                                 </div>
                                                
                                                 <div className="col-md-6 form-group">
@@ -83,26 +90,35 @@ const AddOurTeam = () => {
                                                     <input
                                                         type="file"
                                                         name="image"
-                                                        className="form-control"
-                                                      
+                                                        className={`form-control ${validationErrors.image ? 'is-invalid' : ''}`}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {validationErrors.image && (
+                                                        <div className="invalid-feedback">{validationErrors.image}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-12 form-group">
                                                     <label className="label_field">Description</label>
                                                     <ReactQuill
-                                                        
                                                         value={editorHtml}
                                                         onChange={handleEditorChange}
                                                         modules={AddOurTeam.modules}
                                                         formats={AddOurTeam.formats}
-                                                        style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
+                                                        style={{ height: '300px', marginBottom: '100px' }}
                                                     />
+                                                    {validationErrors.description && (
+                                                        <div className="invalid-feedback d-block">{validationErrors.description}</div>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="form-group margin_0">
-                                                
-                                                <button className="btn btn-primary btn-xs" type="submit">{id === 'add' ? 'Submit' : 'Update'}</button>
+                                                <button 
+                                                    className="main_bt" 
+                                                    type="submit" 
+                                                    disabled={loading}
+                                                >
+                                                    {loading ? 'Submitting...' : (id === 'add' ? 'Submit' : 'Update')}
+                                                </button>
                                             </div>
                                         </form>
                                     </div>

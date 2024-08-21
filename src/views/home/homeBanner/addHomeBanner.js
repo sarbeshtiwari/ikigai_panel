@@ -65,38 +65,46 @@ export default function AddHomeBanner() {
     const validateForm = () => {
         const errors = {};
         let hasImage = false;
-
+    
         formData.banners.forEach((banner, index) => {
+            // Validate desktop image and alt tag
             if (banner.desktop_image_path && !banner.alt_tag_desktop) {
-                errors[`alt_tag_desktop`] = 'Alt tag for desktop image is required';
+                errors[`alt_tag_desktop_${index}`] = 'Alt tag for desktop image is required';
             }
+    
+            // Validate mobile image and alt tag
             if (banner.mobile_image_path && !banner.alt_tag_mobile) {
-                errors[`alt_tag_mobile`] = 'Alt tag for mobile image is required';
+                errors[`alt_tag_mobile_${index}`] = 'Alt tag for mobile image is required';
             }
+    
+            // Validate tablet image and alt tag
             if (banner.tablet_image_path && !banner.alt_tag_tablet) {
-                errors[`alt_tag_tablet`] = 'Alt tag for tablet image is required';
+                errors[`alt_tag_tablet_${index}`] = 'Alt tag for tablet image is required';
             }
-
+    
+            // Check if any image is selected
             if (banner.desktop_image_path || banner.mobile_image_path || banner.tablet_image_path) {
                 hasImage = true;
             }
         });
-
+    
+        // General validation to check if at least one image is selected
         if (!hasImage) {
             errors.general = 'At least one image is required';
         }
-
+    
         return errors;
     };
+    
 
     const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     // const errors = validateForm();
-    //     if (Object.keys(errors).length > 0) {
-    //         setValidationErrors(errors);
-    //         return;
-    //     }
+    // if (Object.keys(errors).length > 0) {
+    //     setValidationErrors(errors);
+    //     return;
+    // }
 
     const formDataToSend = new FormData();
     formData.banners.forEach((banner, index) => {
@@ -121,7 +129,7 @@ export default function AddHomeBanner() {
         navigate(-1);
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert(`Failed to save banner: ${error.message}`);
+        alert(`Failed to save banner: ${error.response?.data}`);
     }
 };
 

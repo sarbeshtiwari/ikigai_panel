@@ -104,7 +104,7 @@ const AddOurServices = () => {
                                                         onChange={handleEditorChange}
                                                         modules={AddOurServices.modules}
                                                         formats={AddOurServices.formats}
-                                                        style={{ height: '300px', marginBottom: '50px' }}  // Add margin-bottom to create space
+                                                        style={{ height: '300px', marginBottom: '100px' }}  // Add margin-bottom to create space
                                                     />
 
                                                     {validationErrors.description && (

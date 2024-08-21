@@ -25,11 +25,67 @@ export default function AddTestimonial() {
                     alt_tag: data.alt_tag || '',
                     videoURL: data.videoURL || '',
                 });
-                setImage(data.image); // Set image URL or file if needed
-                setVideo(data.video); // Set video URL or file if needed
+                // Set image URL or file if needed
+                // Note: Adjust this based on your use case. Typically, you may not set image/video like this unless handling URLs.
+                // setImage(data.image); 
+                // setVideo(data.video); 
             }).catch(error => console.error(error));
         }
     }, [id]);
+
+    const validateImage = (file) => {
+        const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            reader.onloadend = () => {
+                const arr = new Uint8Array(reader.result).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16);
+                }
+
+                let fileType = "";
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        fileType = "unknown";
+                        break;
+                }
+
+                if (!allowedTypes.includes(fileType)) {
+                    reject("Only JPG, JPEG, WEBP, and PNG formats are allowed.");
+                } else {
+                    resolve(file);
+                }
+            };
+
+            reader.onerror = () => reject("Error reading file.");
+            reader.readAsArrayBuffer(file);
+        });
+    };
+
+    const validateVideo = (file) => {
+        // Implement video validation if needed
+        // For example, checking file types and sizes
+        const allowedTypes = ["video/mp4", "video/webm", "video/ogg"];
+        if (!allowedTypes.includes(file.type)) {
+            return Promise.reject("Only MP4, WEBM, and OGG formats are allowed.");
+        }
+        return Promise.resolve(file);
+    };
 
     const handleInputChange = (e) => {
         setFormData({
@@ -38,11 +94,25 @@ export default function AddTestimonial() {
         });
     };
 
-    const handleFileChange = (e) => {
-        if (e.target.name === 'image') {
-            setImage(e.target.files[0]);
-        } else if (e.target.name === 'video') {
-            setVideo(e.target.files[0]);
+    const handleFileChange = async (e) => {
+        const { name } = e.target;
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                if (name === 'image') {
+                    const validImage = await validateImage(file);
+                    setImage(validImage);
+                    setValidationErrors(prevErrors => ({ ...prevErrors, image: null }));
+                } else if (name === 'video') {
+                    const validVideo = await validateVideo(file);
+                    setVideo(validVideo);
+                    setValidationErrors(prevErrors => ({ ...prevErrors, video: null }));
+                }
+            } catch (error) {
+                setValidationErrors(prevErrors => ({ ...prevErrors, [name]: error }));
+                if (name === 'image') setImage(null);
+                if (name === 'video') setVideo(null);
+            }
         }
     };
 
@@ -56,30 +126,31 @@ export default function AddTestimonial() {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-    
+
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setValidationErrors(errors);
             return;
         }
-    
+
+        const { alt_tag, videoURL } = formData;
         const formDataToSend = new FormData();
-        formDataToSend.append('alt_tag', formData.alt_tag);
-        formDataToSend.append('videoURL', formData.videoURL);
-    
+        formDataToSend.append('alt_tag', alt_tag);
+        formDataToSend.append('videoURL', videoURL);
+
         if (image) {
             formDataToSend.append('image', image);
         }
         if (video) {
             formDataToSend.append('video', video);
         }
-    
+
         setLoading(true);
-    
+
         try {
             console.log('FormData:', formDataToSend); // Check FormData
             let result = await saveTestimonials(id, formDataToSend);
-    
+
             if (result.success) {
                 alert('Testimonial saved successfully');
                 navigate(-1);
@@ -92,10 +163,6 @@ export default function AddTestimonial() {
             setLoading(false);
         }
     };
-    
-    
-    
-    
 
     return (
         <>
@@ -159,8 +226,11 @@ export default function AddTestimonial() {
                                                         name="video" 
                                                         id="video" 
                                                         onChange={handleFileChange} 
-                                                        className={`form-control ${validationErrors.videoOrURL ? 'is-invalid' : ''}`} 
+                                                        className={`form-control ${validationErrors.video ? 'is-invalid' : ''}`} 
                                                     />
+                                                    {validationErrors.video && (
+                                                        <div className="invalid-feedback">{validationErrors.video}</div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Video URL</label>
@@ -179,8 +249,6 @@ export default function AddTestimonial() {
                                             </div>
 
                                             <div className="form-group margin_0">
-                                              
-                                               
                                                 <button 
                                                     className="main_bt" 
                                                     type="submit" 
