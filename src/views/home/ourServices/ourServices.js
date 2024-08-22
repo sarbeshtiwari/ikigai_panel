@@ -251,7 +251,7 @@ const OurServices = () => {
                                                             </td>
                                                             <td>
                                                                 {banner.status === 0 ? (
-                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
+                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactive</button>
                                                                 ) : (
                                                                     <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
                                                                 )}
@@ -320,13 +320,13 @@ const OurServices = () => {
                                                           
                                                             <td>
                                                                 {services.on_home === 0 ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 1)}>Deactivate</button>
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 1)}>Deactive</button>
                                                                                 ) : (
                                                                                     <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnHomeStatus(services.id, 0)}>Activate</button>
                                                                                 )}
                                                                 </td>
                                                             <td> {services.on_top === 0 ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnTopStatus(services.id, 1)}>Deactivate</button>
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnTopStatus(services.id, 1)}>Deactive</button>
                                                                                 ) : (
                                                                                     <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnTopStatus(services.id, 0)}>Activate</button>
                                                                                 )}</td>
@@ -334,7 +334,7 @@ const OurServices = () => {
                                                                                 <td>
                                                                         
                                                                                 {services.status === 0 ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(services.id, 1)}>Deactivate</button>
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(services.id, 1)}>Deactive</button>
                                                                                 ) : (
                                                                                     <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(services.id, 0)}>Activate</button>
                                                                                 )}

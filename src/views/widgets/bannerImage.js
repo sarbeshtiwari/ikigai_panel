@@ -19,12 +19,10 @@ export default function AddBannerImage() {
 
     const [validationErrors, setValidationErrors] = useState({});
 
-    useEffect(() => {
-        if (id) {
-            // Uncomment and implement fetch if needed
-            // fetchBannerImageByID(id).then(data => setBanners(data)).catch(console.error);
-        }
-    }, [id]);
+    // useEffect(() => {
+    //     if (id) {
+    //     }
+    // }, [id]);
 
     const handleInputChange = (index, e) => {
         const { name, value } = e.target;
@@ -33,11 +31,64 @@ export default function AddBannerImage() {
         setBanners(updatedBanners);
     };
 
-    const handleFileChange = (index, e, key) => {
+    const validateImage = (file) => {
+        const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        const maxSize = 2 * 1024 * 1024;
+
+        
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            if (file.size > maxSize) {
+                alert("File size exceeds 2 MB");
+                return;
+            }
+            reader.onloadend = () => {
+                const arr = new Uint8Array(reader.result).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16);
+                }
+
+                let fileType = "";
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        fileType = "unknown";
+                        break;
+                }
+
+                if (!allowedTypes.includes(fileType)) {
+                    alert("Only JPG, JPEG, WEBP, and PNG formats are allowed.");
+                } else {
+                    resolve(file);
+                }
+            };
+
+            reader.onerror = () => alert("Error reading file.");
+            reader.readAsArrayBuffer(file);
+        });
+    };
+
+    const handleFileChange = async (index, e, key) => {
         const file = e.target.files[0];
-        const updatedBanners = [...banners];
-        updatedBanners[index][key] = file;
-        setBanners(updatedBanners);
+        const valid = await validateImage(file);
+        if (valid){const updatedBanners = [...banners];
+            updatedBanners[index][key] = file;
+            setBanners(updatedBanners);}
+        
     };
 
     const validateForm = () => {

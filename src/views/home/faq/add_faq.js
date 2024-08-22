@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { fetchFaqByID } from '../../../controllers/faq/faq';
 
 const AddFAQ = () => {
     const { id } = useParams();
@@ -18,7 +19,7 @@ const AddFAQ = () => {
 
     const fetchFAQData = async (id) => {
         try {
-            const response = await axios.get(`https://ikigai-panel-api.onrender.com/faq/getFaqById/${id}`);
+            const response = await fetchFaqByID(id);
             const data = response.data;
     
             if (data.success && data.data) {

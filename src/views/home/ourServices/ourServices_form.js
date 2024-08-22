@@ -12,6 +12,8 @@ const useServicesForm = (id) => {
     const [editorHtml, setEditorHtml] = useState('');
     const [image, setImage] = useState(null);
     const [homeImage, setHomeImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');  // New state for image preview
+    const [homeImagePreview, setHomeImagePreview] = useState('');  // New state for home image preview
     const [loading, setLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
@@ -28,8 +30,8 @@ const useServicesForm = (id) => {
                         description: data.description
                     }));
                     setEditorHtml(data.description); // Ensure editorHtml is updated
-                    setImage(null); // Optionally reset image if needed
-                    setHomeImage(null);
+                    setImagePreview(data.image_path || ''); // Set image preview
+                    setHomeImagePreview(data.home_image_path || ''); // Set home image preview
                 })
                 .catch(console.error);
         }
@@ -44,13 +46,14 @@ const useServicesForm = (id) => {
                 const isValid = await isValidImage(file);
                 if (isValid) {
                     setImage(file);
+                    setImagePreview(URL.createObjectURL(file)); // Create object URL for preview
                 }
             } else if (name === 'home_image') {
                 const isValid = await isValidImage(file);
                 if (isValid) {
                     setHomeImage(file);
+                    setHomeImagePreview(URL.createObjectURL(file)); // Create object URL for preview
                 }
-                
             }
         } else {
             setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -73,8 +76,8 @@ const useServicesForm = (id) => {
         if (!editorHtml.trim()) {
             errors.description = 'Description is required';
         }
-        if (!image) errors.image = 'Image is required';
-        if (!homeImage) errors.home_image = 'Image is required';
+        if (!image && !imagePreview) errors.image = 'Image is required';
+        if (!homeImage && !homeImagePreview) errors.home_image = 'Image is required';
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -131,7 +134,6 @@ const useServicesForm = (id) => {
             reader.readAsArrayBuffer(file);
         });
     };
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -171,6 +173,8 @@ const useServicesForm = (id) => {
         handleInputChange,
         handleEditorChange,
         handleSubmit,
+        imagePreview, // Return imagePreview
+        homeImagePreview // Return homeImagePreview
     };
 };
 

@@ -15,7 +15,8 @@ const AddOurTeam = () => {
         handleInputChange,
         handleEditorChange,
         handleSubmit,
-        loading
+        loading,
+        imagePreview // Include imagePreview
     } = useTeamForm(id);
 
     return (
@@ -73,7 +74,6 @@ const AddOurTeam = () => {
                                                         <div className="invalid-feedback">{validationErrors.designation}</div>
                                                     )}
                                                 </div>
-                                               
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Heading</label>
                                                     <input
@@ -93,6 +93,7 @@ const AddOurTeam = () => {
                                                         className={`form-control ${validationErrors.image ? 'is-invalid' : ''}`}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {imagePreview && <img src={imagePreview} alt="Current" style={{ width: '100px', height: '100px' }} />}
                                                     {validationErrors.image && (
                                                         <div className="invalid-feedback">{validationErrors.image}</div>
                                                     )}

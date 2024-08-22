@@ -12,10 +12,11 @@ const AddAboutUs = () => {
         editorHtml,
         statusMessage,
         validationErrors,
+        loading,
+        imageUrl,
         handleInputChange,
         handleEditorChange,
-        handleSubmit,
-        loading
+        handleSubmit
     } = useAboutForm(id);
 
     return (
@@ -72,6 +73,15 @@ const AddAboutUs = () => {
                                                     {validationErrors.image && (
                                                         <div className="invalid-feedback">{validationErrors.image}</div>
                                                     )}
+                                                    {imageUrl && (
+                                                        <div className="mt-2">
+                                                            <img
+                                                                src={imageUrl}
+                                                                alt="Existing"
+                                                                style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="col-md-12 form-group">
                                                     <label className="label_field">Description</label>
@@ -88,15 +98,14 @@ const AddAboutUs = () => {
                                                 </div>
                                             </div>
                                             <div className="form-group margin_0">
-                                            <button 
-                                                className="main_bt" 
-                                                type="submit" 
-                                                disabled={loading}
-                                                style={{ paddingTop: '10px', paddingBottom: '10px' }} // Adjust padding as needed
-                                            >
-                                                {loading ? 'Submitting...' : (id === 'add' ? 'Submit' : 'Update')}
-                                            </button>
-
+                                                <button 
+                                                    className="main_bt" 
+                                                    type="submit" 
+                                                    disabled={loading}
+                                                    style={{ paddingTop: '10px', paddingBottom: '10px' }} // Adjust padding as needed
+                                                >
+                                                    {loading ? 'Submitting...' : (id === 'add' ? 'Submit' : 'Update')}
+                                                </button>
                                             </div>
                                         </form>
                                     </div>

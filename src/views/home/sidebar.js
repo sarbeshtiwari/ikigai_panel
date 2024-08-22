@@ -21,8 +21,10 @@ export default function Sidebar() {
     useEffect(() => {
         const checkTokenExpiry = () => {
             const expiryTime = localStorage.getItem('expiryTime');
+          
             if (expiryTime) {
                 const expiryTimestamp = parseInt(expiryTime, 10);
+                
                 if (!isNaN(expiryTimestamp)) {
                     const currentTime = Date.now();
                     const timeRemaining = Math.max(0, Math.floor((expiryTimestamp - currentTime) / 1000));

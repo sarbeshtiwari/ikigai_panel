@@ -7,12 +7,12 @@ const useTeamForm = (id) => {
         name: '',
         designation: '',
         heading: '',
-        image: '',
         description: ''
     });
     const [statusMessage, setStatusMessage] = useState('');
     const [editorHtml, setEditorHtml] = useState('');
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(''); // State for image preview
     const [loading, setLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
@@ -25,10 +25,10 @@ const useTeamForm = (id) => {
                         name: data.name,
                         designation: data.designation,
                         heading: data.heading,
-                        image: '', // We reset the image field since it is not fetched from the server
                         description: data.description
                     });
                     setEditorHtml(data.description);
+                    setImagePreview(data.image_path || ''); // Set preview if image path exists
                 })
                 .catch(console.error);
         }
@@ -38,7 +38,6 @@ const useTeamForm = (id) => {
         const errors = {};
         if (!formData.name) errors.name = 'Name is required';
         if (!formData.designation) errors.designation = 'Designation is required';
-        if (!image) errors.image = 'Image is required';
         if (!editorHtml) errors.description = 'Description is required';
 
         return errors;
@@ -98,6 +97,7 @@ const useTeamForm = (id) => {
                 const isValid = await isValidImage(file);
                 if (isValid) {
                     setImage(file);
+                    setImagePreview(URL.createObjectURL(file)); // Create object URL for preview
                 }
             }
         } else {
@@ -131,7 +131,7 @@ const useTeamForm = (id) => {
         formDataToSend.append('heading', formData.heading);
         formDataToSend.append('description', editorHtml);
         if (image) {
-            formDataToSend.append('image', image);
+            formDataToSend.append('image', image); // Append to FormData with correct column name
         }
 
         setLoading(true);
@@ -154,7 +154,8 @@ const useTeamForm = (id) => {
         loading,
         handleInputChange,
         handleEditorChange,
-        handleSubmit
+        handleSubmit,
+        imagePreview // Return imagePreview
     };
 };
 

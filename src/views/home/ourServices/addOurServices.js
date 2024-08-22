@@ -11,10 +11,12 @@ const AddOurServices = () => {
         formData,
         editorHtml,
         statusMessage,
-        validationErrors,  // Add validationErrors here
+        validationErrors,
         handleInputChange,
         handleEditorChange,
-        handleSubmit
+        handleSubmit,
+        imagePreview,
+        homeImagePreview
     } = useServicesForm(id);
 
     return (
@@ -67,6 +69,7 @@ const AddOurServices = () => {
                                                         className={`form-control ${validationErrors.image ? 'is-invalid' : ''}`}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {imagePreview && <img src={imagePreview} alt="Current" style={{ width: '100px', height: '100px' }} />}
                                                     {validationErrors.image && (
                                                         <div className="invalid-feedback">{validationErrors.image}</div>
                                                     )}
@@ -92,6 +95,7 @@ const AddOurServices = () => {
                                                         className={`form-control ${validationErrors.home_image ? 'is-invalid' : ''}`}
                                                         onChange={handleInputChange}
                                                     />
+                                                    {homeImagePreview && <img src={homeImagePreview} alt="Current" style={{ width: '100px', height: '100px' }} />}
                                                     {validationErrors.home_image && (
                                                         <div className="invalid-feedback">{validationErrors.home_image}</div>
                                                     )}

@@ -1,32 +1,117 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
+import { addHeaderFooter, fetchHeaderFooter, updateHeaderFooter } from '../../controllers/header_footer/header_footer';
+import Sidebar from '../home/sidebar';
 
 export default function HeaderFooter() {
     const [logo, setLogo] = useState(null);
-    const [buttons, setButtons] = useState([{ text: '', checked: false }]);
+    const [logoPreview, setLogoPreview] = useState('');
+    const [buttons, setButtons] = useState([{ text: '', checked: false, link: '' }]);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [footerTitle, setFooterTitle] = useState('');
     const [footerDescription, setFooterDescription] = useState('');
     const [address, setAddress] = useState('');
     const [contactPhones, setContactPhones] = useState('');
     const [email, setEmail] = useState('');
+    const [errors, setErrors] = useState({});
+    const [id, setID] = useState('');
 
-    const handleLogoChange = (event) => {
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await fetchHeaderFooter();
+                const data = result[0] || {};
+                setID(data.id);
+                setLogo(data.logo);
+                setButtons(Array.isArray(data.buttons) ? data.buttons : [{ text: '', checked: false, link: '' }]);
+                setPhoneNumber(data.phone_number);
+                setFooterTitle(data.footer_title);
+                setFooterDescription(data.footer_description);
+                setAddress(data.address);
+                setContactPhones(data.contact_phones);
+                setEmail(data.email);
+
+                if (data.logo) {
+                    setLogoPreview(data.logo);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to fetch data. Please try again.');
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const validateImage = (file) => {
+        const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            reader.onloadend = () => {
+                const arr = new Uint8Array(reader.result).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16);
+                }
+
+                let fileType = "";
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        fileType = "unknown";
+                        break;
+                }
+
+                if (!allowedTypes.includes(fileType)) {
+                    alert("Only JPG, JPEG, WEBP, and PNG formats are allowed.");
+                } else {
+                    resolve(file);
+                }
+            };
+
+            reader.onerror = () => reject("Error reading file.");
+            reader.readAsArrayBuffer(file);
+        });
+    };
+
+    const handleLogoChange = async (event) => {
         const file = event.target.files[0];
-        console.log('Selected file:', file); // Debugging line
         if (file) {
-            setLogo(file); // Create a URL for the uploaded file
+            const validFile = await validateImage(file);
+            if (validFile) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5 MB.');
+                    return;
+                } else {
+                    const fileUrl = URL.createObjectURL(file);
+                    setLogo(file);
+                    setLogoPreview(fileUrl);
+                }
+            } else {
+                setLogo(null);
+            }
         }
     };
-    
 
     const addButton = () => {
-        setButtons([...buttons, { text: '', checked: false }]);
+        setButtons([...buttons, { text: '', checked: false, link: '' }]);
     };
 
     const updateButton = (index, value) => {
         const newButtons = [...buttons];
-        newButtons[index] = { ...newButtons[index], text: value };
+        newButtons[index] = { ...newButtons[index], text: value, link: generateLink(value) };
         setButtons(newButtons);
     };
 
@@ -40,47 +125,45 @@ export default function HeaderFooter() {
         setButtons(buttons.filter((_, i) => i !== index));
     };
 
+    const validateFields = () => {
+        const newErrors = {};
+        if (!logo) newErrors.logo = 'Logo is required.';
+        if (!footerTitle) newErrors.footerTitle = 'Footer title is required.';
+        if (!footerDescription) newErrors.footerDescription = 'Footer description is required.';
+        return newErrors;
+    };
+
     const handleSubmit = async () => {
+        const validationErrors = validateFields();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
         const data = {
-            buttons: buttons.map((btn) => ({ text: btn.text, checked: btn.checked })),
-            phoneNumber,
-            footerTitle,
-            footerDescription,
+            buttons: buttons.map((btn) => ({ text: btn.text, checked: btn.checked, link: btn.link })),
+            phone_number: phoneNumber,
+            footer_title: footerTitle,
+            footer_description: footerDescription,
             address,
-            contactPhones,
+            contact_phones: contactPhones,
             email,
         };
-        console.log(data)
 
         try {
             const formData = new FormData();
             if (logo) {
-                formData.append('logo', logo); // Append the file itself
+                formData.append('logo', logo);
             }
             formData.append('buttons', JSON.stringify(data.buttons));
-            formData.append('phoneNumber', data.phoneNumber);
-            formData.append('footerTitle', data.footerTitle);
-            formData.append('footerDescription', data.footerDescription);
+            formData.append('phone_number', data.phone_number);
+            formData.append('footer_title', data.footer_title);
+            formData.append('footer_description', data.footer_description);
             formData.append('address', data.address);
-            formData.append('contactPhones', data.contactPhones);
+            formData.append('contact_phones', data.contact_phones);
             formData.append('email', data.email);
-    
-            // Check FormData entries
-            for (let pair of formData.entries()) {
-                console.log(pair[0], pair[1]);
-            }
-    
-            const response = await fetch('https://ikigai-panel-api.onrender.com/headerFooter/submit', {
-                method: 'POST',
-                body: formData,
-            });
-    
-            // if (!response.ok) {
-            //     throw new Error('Network response was not ok');
-            // }
-    
-            const result = await response.json();
-            console.log('Success:', result);
+
+            await updateHeaderFooter(id, formData);
             alert('Data submitted successfully!');
         } catch (error) {
             console.error('Error:', error);
@@ -88,128 +171,163 @@ export default function HeaderFooter() {
         }
     };
 
+    // Function to generate link based on button text
+    const generateLink = (text) => {
+        const formattedText = text.trim().toLowerCase().replace(/\s+/g, '-');
+        return text.trim().toLowerCase() === 'home' ? '/' : `/${formattedText}`;
+    };
+
     return (
-        <div className="container mt-4">
-            <header className="mb-4">
-                <div className="mb-3">
-                    <label className="form-label">Logo:</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        name='logo'
-                        id='logo'
-                        className="form-control"
-                        onChange={handleLogoChange}
-                    />
-                    {logo && <img src={logo} alt="Logo Preview" className="img-fluid mt-2" />}
-                </div>
-                <div className="mb-3">
-                    {buttons.map((btn, index) => (
-                        <div key={index} className="d-flex align-items-center mb-2">
-                            <div className="form-check me-2">
-                                <input
-                                    type="checkbox"
-                                    className="form-check-input"
-                                    checked={btn.checked}
-                                    onChange={() => toggleButtonCheck(index)}
-                                />
-                                <label className="form-check-label">
-                                    Checkable
-                                </label>
+        <>
+            <Sidebar />
+            <div className="container mt-5">
+                <div className="row">
+                    <div className="col-lg-12">
+                        <div className="card shadow-sm">
+                            <div className="card-body">
+                                <h2 className="card-title mb-4">Header & Footer Settings</h2>
+
+                                <div className="mb-4">
+                                    <h6>Logo:</h6>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        id="logo"
+                                        className="form-control"
+                                        onChange={handleLogoChange}
+                                    />
+                                    {logoPreview && (
+                                        <img src={logoPreview} alt="Logo Preview" className="img-fluid mt-3" style={{ maxHeight: '150px', objectFit: 'contain' }} />
+                                    )}
+                                    {errors.logo && <div className="text-danger mt-2">{errors.logo}</div>}
+                                </div>
+
+                                <div className="mb-4">
+                                    <h6>Header & Footer Buttons:</h6>
+                                    {buttons.map((btn, index) => (
+                                        <div key={index} className="d-flex align-items-center mb-2">
+                                            <div className="form-check me-2">
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input"
+                                                    checked={btn.checked}
+                                                    onChange={() => toggleButtonCheck(index)}
+                                                />
+                                                <label className="form-check-label">Checked</label>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                className="form-control me-2"
+                                                placeholder={`Button ${index + 1}`}
+                                                value={btn.text}
+                                                onChange={(e) => updateButton(index, e.target.value)}
+                                            />
+                                            <span className="ms-2">
+                                                <a href={btn.link} className="text-decoration-none" target="_blank" rel="noopener noreferrer">
+                                                    {btn.link}
+                                                </a>
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger ms-2"
+                                                onClick={() => handleButtonRemove(index)}
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary mt-2"
+                                        onClick={addButton}
+                                    >
+                                        Add More Buttons
+                                    </button>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="phoneNumber" className="form-label"><h6>Phone Number:</h6></label>
+                                    <input
+                                        type="text"
+                                        id="phoneNumber"
+                                        className="form-control"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="footerTitle" className="form-label"><h6>Footer Title:</h6></label>
+                                    <input
+                                        type="text"
+                                        id="footerTitle"
+                                        className="form-control"
+                                        value={footerTitle}
+                                        onChange={(e) => setFooterTitle(e.target.value)}
+                                    />
+                                    {errors.footerTitle && <div className="text-danger mt-2">{errors.footerTitle}</div>}
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="footerDescription" className="form-label"><h6>Footer Description:</h6></label>
+                                    <textarea
+                                        id="footerDescription"
+                                        className="form-control"
+                                        rows="4"
+                                        value={footerDescription}
+                                        onChange={(e) => setFooterDescription(e.target.value)}
+                                    />
+                                    {errors.footerDescription && <div className="text-danger mt-2">{errors.footerDescription}</div>}
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="address" className="form-label"><h6>Address:</h6></label>
+                                    <input
+                                        type="text"
+                                        id="address"
+                                        className="form-control"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="contactPhones" className="form-label"><h6>Contact Phones:</h6></label>
+                                    <input
+                                        type="text"
+                                        id="contactPhones"
+                                        className="form-control"
+                                        value={contactPhones}
+                                        onChange={(e) => setContactPhones(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="mb-4">
+                                    <label htmlFor="email" className="form-label"><h6>Contact Email:</h6></label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        className="form-control"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="btn btn-success"
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </button>
                             </div>
-                            <input
-                                type="text"
-                                className="form-control me-2"
-                                placeholder={`Button ${index + 1}`}
-                                value={btn.text}
-                                onChange={(e) => updateButton(index, e.target.value)}
-                            />
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={() => handleButtonRemove(index)}
-                            >
-                                Remove
-                            </button>
                         </div>
-                    ))}
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={addButton}
-                    >
-                        Add Button
-                    </button>
+                    </div>
                 </div>
-                <div className="mb-3">
-                    <label className="form-label">Phone Number:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                    />
-                </div>
-            </header>
-
-            <footer>
-                <div className="mb-3">
-                    <label className="form-label">Footer Title:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={footerTitle}
-                        onChange={(e) => setFooterTitle(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Footer Description:</label>
-                    <textarea
-                        className="form-control"
-                        value={footerDescription}
-                        onChange={(e) => setFooterDescription(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Address:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Contact Phone Numbers (comma separated):</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={contactPhones}
-                        onChange={(e) => setContactPhones(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label className="form-label">Email:</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-            </footer>
-
-            <button
-                type="button"
-                className="btn btn-success"
-                onClick={handleSubmit}
-            >
-                Submit
-            </button>
-        </div>
+            </div>
+        </>
     );
 }
-
 
 
 

@@ -14,6 +14,8 @@ export default function AddTestimonial() {
 
     const [image, setImage] = useState(null);
     const [video, setVideo] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
+    const [videoPreview, setVideoPreview] = useState('');
     const [validationErrors, setValidationErrors] = useState({});
     const [loading, setLoading] = useState(false);  // New loading state
 
@@ -21,15 +23,15 @@ export default function AddTestimonial() {
         if (id !== 'add') {
             // Fetch existing testimonial data if not adding a new one
             fetchTestimonialsByID(id).then(data => {
+                const { image_path, alt_tag, videoURL, video_path } = data;
                 setFormData({
-                    alt_tag: data.alt_tag || '',
-                    videoURL: data.videoURL || '',
+                    alt_tag: alt_tag || '',
+                    videoURL: videoURL || '',
                 });
-                // Set image URL or file if needed
-                // Note: Adjust this based on your use case. Typically, you may not set image/video like this unless handling URLs.
-                // setImage(data.image); 
-                // setVideo(data.video); 
-            }).catch(error => console.error(error));
+                setImagePreview(image_path || '');
+                // Since videoURL is an iframe, it will be set directly in the textarea or input
+                setVideoPreview(videoURL || video_path);
+            }).catch(error => console.error("Error fetching testimonial data:", error));
         }
     }, [id]);
 
@@ -118,9 +120,9 @@ export default function AddTestimonial() {
 
     const validateForm = () => {
         const errors = {};
-        if (!image) errors.image = 'Thumbnail image is required';
+        if (!image && !imagePreview) errors.image = 'Thumbnail image is required';
         if (!formData.alt_tag) errors.alt_tag = 'Alt tag is required';
-        if (!video && !formData.videoURL) errors.videoOrURL = 'Either video file or video URL must be provided';
+        if (!video && !videoPreview && !formData.videoURL) errors.videoOrURL = 'Either video file or video URL must be provided';
         return errors;
     };
 
@@ -194,6 +196,16 @@ export default function AddTestimonial() {
                                             <div className="form-row mb-3">
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Thumbnail Image</label>
+                                                    {imagePreview && (
+                                                        <div>
+                                                            <img 
+                                                                src={imagePreview} 
+                                                                alt="Thumbnail preview" 
+                                                                className="img-thumbnail" 
+                                                                style={{ width: '200px', height: 'auto', maxHeight: '200px' }} 
+                                                            />
+                                                        </div>
+                                                    )}
                                                     <input 
                                                         type="file" 
                                                         name="image" 
@@ -221,6 +233,16 @@ export default function AddTestimonial() {
                                                 </div>
                                                 <div className="col-md-6 form-group">
                                                     <label className="label_field">Video</label>
+                                                    {videoPreview && (
+                                                        <div>
+                                                            <video 
+                                                                src={videoPreview} 
+                                                                controls 
+                                                                className="video-thumbnail" 
+                                                                style={{ width: '320px', height: 'auto' }} 
+                                                            />
+                                                        </div>
+                                                    )}
                                                     <input 
                                                         type="file" 
                                                         name="video" 
@@ -233,31 +255,40 @@ export default function AddTestimonial() {
                                                     )}
                                                 </div>
                                                 <div className="col-md-6 form-group">
-                                                    <label className="label_field">Video URL</label>
-                                                    <input 
-                                                        type="text" 
-                                                        name="videoURL" 
-                                                        id="videoURL" 
-                                                        value={formData.videoURL} 
-                                                        onChange={handleInputChange} 
-                                                        className={`form-control ${validationErrors.videoOrURL ? 'is-invalid' : ''}`} 
-                                                    />
-                                                    {validationErrors.videoOrURL && (
-                                                        <div className="invalid-feedback">{validationErrors.videoOrURL}</div>
-                                                    )}
-                                                </div>
+                                                <label className="label_field">Video URL</label>
+                                                {formData.videoURL && (
+                                                    <div>
+                                                        {/* Ensure the URL is in the correct format */}
+                                                        <iframe 
+                                                            width="320" 
+                                                            height="180" 
+                                                            src={`https://www.youtube.com/embed/${formData.videoURL.split('/').pop()}`} 
+                                                            title="Video URL" 
+                                                            frameBorder="0" 
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                            referrerPolicy="strict-origin-when-cross-origin" 
+                                                            allowFullScreen 
+                                                        />
+                                                    </div>
+                                                )}
+                                                <input 
+                                                    type="text" 
+                                                    name="videoURL" 
+                                                    id="videoURL" 
+                                                    value={formData.videoURL} 
+                                                    onChange={handleInputChange} 
+                                                    className={`form-control ${validationErrors.videoOrURL ? 'is-invalid' : ''}`} 
+                                                />
+                                                {validationErrors.videoOrURL && (
+                                                    <div className="invalid-feedback">{validationErrors.videoOrURL}</div>
+                                                )}
                                             </div>
-
-                                            <div className="form-group margin_0">
-                                                <button 
-                                                    className="main_bt" 
-                                                    type="submit" 
-                                                    disabled={loading}  // Disable button when loading
-                                                >
-                                                    {loading ? 'Submitting...' : 'Submit'}
+                                            </div>
+                                            <div className="form-group">
+                                                <button type="submit" className="main_bt">
+                                                    {loading ? 'Submiting...' : 'Submit'}
                                                 </button>
                                             </div>
-                                            <span id="result" className="text-danger mt-4 d-block"></span>
                                         </form>
                                     </div>
                                 </div>

@@ -9,7 +9,8 @@ const useAboutForm = (id) => {
     });
     const [statusMessage, setStatusMessage] = useState('');
     const [editorHtml, setEditorHtml] = useState('');
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState(null); // For new image upload
+    const [imageUrl, setImageUrl] = useState(''); // For displaying existing image
     const [loading, setLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     
@@ -24,6 +25,7 @@ const useAboutForm = (id) => {
                         description: data.description
                     });
                     setEditorHtml(data.description); // Ensure editorHtml is updated
+                    setImageUrl(data.image_path || ''); // Set the existing image URL
                 })
                 .catch(console.error);
         }
@@ -33,7 +35,8 @@ const useAboutForm = (id) => {
         const errors = {};
         if (!formData.heading.trim()) errors.heading = 'Heading cannot be empty.';
         if (!editorHtml.trim()) errors.description = 'Description cannot be empty.';
-        if (!image) errors.image = 'Image is required';
+        if (id === 'add' && !image) errors.image = 'Image is required';
+        if (id !== 'add' && !image && !imageUrl) errors.image = 'Image is required';
 
         return errors;
     };
@@ -146,6 +149,7 @@ const useAboutForm = (id) => {
         statusMessage,
         validationErrors,
         loading,
+        imageUrl, // Expose the imageUrl
         handleInputChange,
         handleEditorChange,
         handleSubmit

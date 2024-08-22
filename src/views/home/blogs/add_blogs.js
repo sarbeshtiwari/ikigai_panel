@@ -31,14 +31,13 @@ export default function AddBlogs() {
                         blogName: data.blogName,
                         blogBy: data.blogBy,
                         blogDate: data.blogDate,
-                        blogTags: data.blogTags,
+                        blogTags: data.blogTags || '',
                         blogLink: data.blogLink || '',
                         alt_tag: data.alt_tag,
                         content: data.content,
                         schema_data: data.schema_data || '',
                     });
-                    setFile(null);
-                    setPreviewURL(null);
+                    setPreviewURL(data.image_path || null); // Set image URL from the backend
                 })
                 .catch(console.error);
         }
@@ -51,7 +50,8 @@ export default function AddBlogs() {
         if (!formData.blogDate.trim()) formErrors.blogDate = 'Blog Date cannot be empty.';
         if (!formData.content.trim()) formErrors.content = 'Content cannot be empty.';
         if (!formData.alt_tag.trim()) formErrors.alt_tag = 'Alt Tag cannot be empty.';
-        if (!file) formErrors.file = 'Image cannot be empty.';
+        if (!file && id === 'add') formErrors.file = 'Image cannot be empty.';
+        if (id !== 'add' && !file && !previewURL) errors.file = 'Image is required';
 
         setErrors(formErrors);
         return formErrors;
@@ -247,7 +247,6 @@ export default function AddBlogs() {
                                                         name="image"
                                                         onChange={handleFileChange}
                                                         className={`form-control ${errors.file ? 'is-invalid' : ''}`}
-                                                        required
                                                     />
                                                     {errors.file && (
                                                         <div className="invalid-feedback">{errors.file}</div>
@@ -310,7 +309,6 @@ export default function AddBlogs() {
                                                         ? (isSubmitting ? 'Submitting...' : 'Submit') 
                                                         : (isSubmitting ? 'Updating...' : 'Update')}
                                                 </button>
-
                                                 </div>
                                             </div>
                                         </form>

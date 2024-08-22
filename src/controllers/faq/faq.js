@@ -50,7 +50,7 @@ export const fetchFaqByID = async (id) => {
 
 export const saveFaq = async (id, formDataToSend) => {
     try {
-        const url = id === 'add' ? `${API_URL}/upload` : `${API_URL}/update/${id}`;
+        const url = id === 'add' ? `${API_URL}/addFaq` : `${API_URL}/updateFaq/${id}`;
         const method = id === 'add' ? 'POST' : 'PUT';
         const response = await axios({
             method,

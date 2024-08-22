@@ -29,7 +29,7 @@ import HeaderFooter from './views/widgets/header_footer';
 
 function App() {
   return (
-    <HashRouter>
+    <HashRouter hash={false}>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />

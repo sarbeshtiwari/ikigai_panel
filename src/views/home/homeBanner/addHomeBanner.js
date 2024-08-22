@@ -8,22 +8,27 @@ export default function AddHomeBanner() {
     const { id } = useParams();
     const [validationErrors, setValidationErrors] = useState({});
 
-    const [formData, setFormData] = useState({
-        banners: [
+    // const [formData, setFormData] = useState({
+    //     banners: [
+    //         { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: '' }
+    //     ]
+    // });
+
+    const [formData, setFormData] = useState([
             { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: '' }
         ]
-    });
+    );
 
     const [images, setImages] = useState([{}, {}, {}]); // Track uploaded images (desktop, mobile, tablet)
 
-    useEffect(() => {
-        if (id !== 'add') {
-            fetchHomeBannerByID(id).then(data => {
-                // Assuming data.banners is an array of banner objects
-                setFormData({ banners: data.banners });
-            }).catch(console.error);
-        }
-    }, [id]);
+    // useEffect(() => {
+    //     if (id !== 'add') {
+    //         fetchHomeBannerByID(id).then(data => {
+    //             // Assuming data.banners is an array of banner objects
+    //             setFormData({ banners: data.banners });
+    //         }).catch(console.error);
+    //     }
+    // }, [id]);
 
     const handleInputChange = (index, e) => {
         const { name, value } = e.target;
@@ -31,26 +36,82 @@ export default function AddHomeBanner() {
         updatedBanners[index][name] = value;
         setFormData({ banners: updatedBanners });
     };
+    const validateImage = (file) => {
+        const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        const maxSize = 2 * 1024 * 1024;
 
-    const handleFileChange = (index, e, key) => {
+        
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            if (file.size > maxSize) {
+                alert("File size exceeds 2 MB");
+                return;
+            }
+            reader.onloadend = () => {
+                const arr = new Uint8Array(reader.result).subarray(0, 4);
+                let header = "";
+                for (let i = 0; i < arr.length; i++) {
+                    header += arr[i].toString(16);
+                }
+
+                let fileType = "";
+                switch (header) {
+                    case "89504e47":
+                        fileType = "image/png";
+                        break;
+                    case "52494646":
+                        fileType = "image/webp";
+                        break;
+                    case "ffd8ffe0":
+                    case "ffd8ffe1":
+                    case "ffd8ffe2":
+                    case "ffd8ffe3":
+                    case "ffd8ffe8":
+                        fileType = "image/jpeg";
+                        break;
+                    default:
+                        fileType = "unknown";
+                        break;
+                }
+
+                if (!allowedTypes.includes(fileType)) {
+                    setImages(null)
+                    alert("Only JPG, JPEG, WEBP, and PNG formats are allowed.");
+                    
+                } else {
+                    resolve(file);
+                }
+            };
+
+            reader.onerror = () => alert("Error reading file.");
+            reader.readAsArrayBuffer(file);
+        });
+    };
+
+    const handleFileChange = async (index, e, key) => {
         const file = e.target.files[0];
-        const updatedBanners = [...formData.banners];
-        updatedBanners[index][key] = file ? URL.createObjectURL(file) : '';
-        setImages(prevImages => {
+        const valid = await validateImage(file);
+        if (valid){
+            const updatedBanners = [...formData.banners];
+            updatedBanners[index][key] = file ? URL.createObjectURL(file) : '';
+            setImages(prevImages => {
             const newImages = [...prevImages];
             newImages[index] = { ...newImages[index], [key]: file };
             return newImages;
         });
         setFormData({ banners: updatedBanners });
+
+    } 
+        
+       
     };
 
     const handleAddRow = () => {
-        setFormData(prevState => ({
-            banners: [
-                ...prevState.banners,
+        setFormData([...formData,
                 { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: ''}
             ]
-        }));
+        );
         setImages(prevImages => [...prevImages, {}, {}, {}]); // Add a new set of image placeholders
     };
 
@@ -62,49 +123,10 @@ export default function AddHomeBanner() {
         }
     };
 
-    const validateForm = () => {
-        const errors = {};
-        let hasImage = false;
     
-        formData.banners.forEach((banner, index) => {
-            // Validate desktop image and alt tag
-            if (banner.desktop_image_path && !banner.alt_tag_desktop) {
-                errors[`alt_tag_desktop_${index}`] = 'Alt tag for desktop image is required';
-            }
-    
-            // Validate mobile image and alt tag
-            if (banner.mobile_image_path && !banner.alt_tag_mobile) {
-                errors[`alt_tag_mobile_${index}`] = 'Alt tag for mobile image is required';
-            }
-    
-            // Validate tablet image and alt tag
-            if (banner.tablet_image_path && !banner.alt_tag_tablet) {
-                errors[`alt_tag_tablet_${index}`] = 'Alt tag for tablet image is required';
-            }
-    
-            // Check if any image is selected
-            if (banner.desktop_image_path || banner.mobile_image_path || banner.tablet_image_path) {
-                hasImage = true;
-            }
-        });
-    
-        // General validation to check if at least one image is selected
-        if (!hasImage) {
-            errors.general = 'At least one image is required';
-        }
-    
-        return errors;
-    };
-    
-
     const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // const errors = validateForm();
-    // if (Object.keys(errors).length > 0) {
-    //     setValidationErrors(errors);
-    //     return;
-    // }
 
     const formDataToSend = new FormData();
     formData.banners.forEach((banner, index) => {
