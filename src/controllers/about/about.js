@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/about';
+const API_URL = 'http://localhost:1000/about';
 
 export const fetchAboutUs = async () => {
     try {

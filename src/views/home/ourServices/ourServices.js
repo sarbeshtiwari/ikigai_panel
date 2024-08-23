@@ -87,6 +87,13 @@ const OurServices = () => {
     };
 
     const handleDeleteBanner = async (id) => {
+         // Show a confirmation dialog to the user
+         const isConfirmed = window.confirm('Are you sure you want to delete this About Us?');
+    
+         if (!isConfirmed) {
+             // If the user cancels, exit the function
+             return;
+         }
         try {
             const result = await deleteBanner(id);
             if (result.success) {

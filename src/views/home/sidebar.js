@@ -20,7 +20,7 @@ export default function Sidebar() {
 
     useEffect(() => {
         const checkTokenExpiry = () => {
-            const expiryTime = localStorage.getItem('expiryTime');
+            const expiryTime = window.localStorage.getItem('expiryTime');
           
             if (expiryTime) {
                 const expiryTimestamp = parseInt(expiryTime, 10);
@@ -32,7 +32,7 @@ export default function Sidebar() {
                     if (timeRemaining <= 0) {
                         localStorage.removeItem('authToken');
                         localStorage.removeItem('expiryTime');
-                        window.location.href = '/login';
+                        window.location.href = '/';
                     }
                 }
             }
@@ -61,9 +61,9 @@ export default function Sidebar() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('expiryTime');
-        window.location.href = '/login';
+        window.localStorage.removeItem('authToken');
+        window.localStorage.removeItem('expiryTime');
+        window.location.href = '/';
     };
 
     return (

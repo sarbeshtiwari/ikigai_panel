@@ -8,16 +8,16 @@ export default function AddHomeBanner() {
     const { id } = useParams();
     const [validationErrors, setValidationErrors] = useState({});
 
-    // const [formData, setFormData] = useState({
-    //     banners: [
-    //         { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: '' }
-    //     ]
-    // });
-
-    const [formData, setFormData] = useState([
+    const [formData, setFormData] = useState({
+        banners: [
             { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: '' }
         ]
-    );
+    });
+
+    // const [formData, setFormData] = useState([
+    //         { desktop_image_path: '', mobile_image_path: '', tablet_image_path: '', alt_tag_desktop: '', alt_tag_mobile: '', alt_tag_tablet: '' }
+    //     ]
+    // );
 
     const [images, setImages] = useState([{}, {}, {}]); // Track uploaded images (desktop, mobile, tablet)
 

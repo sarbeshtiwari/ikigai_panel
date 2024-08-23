@@ -137,6 +137,14 @@ const AboutUs = () => {
     };
 
     const handleDeleteAbout = async (id) => {
+        // Show a confirmation dialog to the user
+        const isConfirmed = window.confirm('Are you sure you want to delete this About Us?');
+    
+        if (!isConfirmed) {
+            // If the user cancels, exit the function
+            return;
+        }
+    
         try {
             const result = await deleteAboutUs(id);
             if (result.success) {
@@ -150,6 +158,7 @@ const AboutUs = () => {
             alert(`Error: ${error.message}`);
         }
     };
+    
 
     return (
         <>
@@ -228,9 +237,9 @@ const AboutUs = () => {
                                                                 </td>
                                                                 <td>
                                                                     {banner.status === 0 ? (
-                                                                        <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
+                                                                        <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactive</button>
                                                                     ) : (
-                                                                        <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
+                                                                        <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Active</button>
                                                                     )}
                                                                 </td>
                                                                 <td>
@@ -298,23 +307,23 @@ const AboutUs = () => {
                                                         </td>
                                                         <td>
                                                             {about.on_home === 0 ? (
-                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(about.id, 1)}>Deactivate</button>
+                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnHomeStatus(about.id, 1)}>Deactive</button>
                                                             ) : (
-                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnHomeStatus(about.id, 0)}>Activate</button>
+                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnHomeStatus(about.id, 0)}>Active</button>
                                                             )}
                                                         </td>
                                                         <td>
                                                             {about.on_top === 0 ? (
-                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnTopStatus(about.id, 1)}>Deactivate</button>
+                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateOnTopStatus(about.id, 1)}>Deactive</button>
                                                             ) : (
-                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnTopStatus(about.id, 0)}>Activate</button>
+                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateOnTopStatus(about.id, 0)}>Active</button>
                                                             )}
                                                         </td>
                                                         <td>
                                                             {about.status === 0 ? (
-                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(about.id, 1)}>Deactivate</button>
+                                                                <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(about.id, 1)}>Deactive</button>
                                                             ) : (
-                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(about.id, 0)}>Activate</button>
+                                                                <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(about.id, 0)}>Active</button>
                                                             )}
                                                         </td>
                                                         <td>

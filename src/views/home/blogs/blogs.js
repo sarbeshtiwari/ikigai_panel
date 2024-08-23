@@ -207,9 +207,9 @@ export default function Blogs() {
                                                             </td>
                                                             <td>
                                                                 {banner.status === 0 ? (
-                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactivate</button>
+                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 1)}>Deactive</button>
                                                                 ) : (
-                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Activate</button>
+                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateBannerStatus(banner.id, 0)}>Active</button>
                                                                 )}
                                                             </td>
                                                             <td>
@@ -274,9 +274,9 @@ export default function Blogs() {
                                                                     <td>{blog.content.slice(0, 20)}</td>
                                                                     <td>{blog.blogDate}</td>
                                                                     <td>{blog.status === 0 ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(blog.id, 1)}>Deactivate</button>
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(blog.id, 1)}>Deactive</button>
                                                                                 ) : (
-                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(blog.id, 0)}>Activate</button>
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(blog.id, 0)}>Active</button>
                                                                                 )}</td>
                                                                     <td>
                                                                         <ul className="list-inline d-flex justify-content-end">

@@ -40,8 +40,8 @@ export const deleteFaq = async (id) => {
 
 export const fetchFaqByID = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/getByID/${id}`);
-        return response.data.data;
+        const response = await axios.get(`${API_URL}/getFaqById/${id}`);
+        return response.data;
     } catch (error) {
         console.error('Error fetching  Faq data:', error);
         throw error;

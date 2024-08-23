@@ -157,9 +157,9 @@ export default function HomeBanner() {
                                                                         
                                                                           
                                                                                 {banner.status === 0 ? (
-                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(banner.id, 1)}>Deactivate</button>
+                                                                                    <button className="btn btn-warning btn-xs" onClick={() => handleUpdateStatus(banner.id, 1)}>Deactive</button>
                                                                                 ) : (
-                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(banner.id, 0)}>Activate</button>
+                                                                                    <button className="btn btn-success btn-xs" onClick={() => handleUpdateStatus(banner.id, 0)}>Active</button>
                                                                                 )}
                                                                           
                                                                        

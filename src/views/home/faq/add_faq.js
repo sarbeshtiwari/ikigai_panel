@@ -20,9 +20,9 @@ const AddFAQ = () => {
     const fetchFAQData = async (id) => {
         try {
             const response = await fetchFaqByID(id);
-            const data = response.data;
+            const data = response;
     
-            if (data.success && data.data) {
+            if (data.success && data) {
                 setHeadings([data.data]);
             } else {
                 console.error('Unexpected data format:', data);

@@ -11,8 +11,8 @@ export const loginUser = async (username, password) => {
         console.log(response.data)
 
         // Store token and expiry time in local storage
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('expiryTime', (Date.now() + expiresIn * 1000).toString());
+        window.localStorage.setItem('authToken', token);
+        window.localStorage.setItem('expiryTime', (Date.now() + expiresIn * 1000).toString());
 
         return response.data;
     } catch (error) {

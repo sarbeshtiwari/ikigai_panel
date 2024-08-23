@@ -137,10 +137,10 @@ const useTeamForm = (id) => {
         setLoading(true);
         try {
             await saveOurTeam(id, formDataToSend);
-            alert('Meta info saved successfully');
+            alert('Team data saved successfully');
             navigate(-1);
         } catch (error) {
-            setStatusMessage(`Failed to save meta info: ${error.message}`);
+            setStatusMessage(`Failed to save Team data: ${error.message}`);
         } finally {
             setLoading(false);
         }

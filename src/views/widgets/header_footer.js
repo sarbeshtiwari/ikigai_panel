@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { addHeaderFooter, fetchHeaderFooter, updateHeaderFooter } from '../../controllers/header_footer/header_footer';
 import Sidebar from '../home/sidebar';
+import { useHistory, useNavigate } from 'react-router-dom'; // Add this import
 
 export default function HeaderFooter() {
     const [logo, setLogo] = useState(null);
@@ -15,6 +16,8 @@ export default function HeaderFooter() {
     const [errors, setErrors] = useState({});
     const [id, setID] = useState('');
 
+   const navigate = useNavigate();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -23,7 +26,7 @@ export default function HeaderFooter() {
                 setID(data.id);
                 setLogo(data.logo);
                 setButtons(Array.isArray(data.buttons) ? data.buttons : [{ text: '', checked: false, link: '' }]);
-                setPhoneNumber(data.phone_number);
+                setPhoneNumber(data.phone_number.slice(2,12));
                 setFooterTitle(data.footer_title);
                 setFooterDescription(data.footer_description);
                 setAddress(data.address);
@@ -156,7 +159,7 @@ export default function HeaderFooter() {
                 formData.append('logo', logo);
             }
             formData.append('buttons', JSON.stringify(data.buttons));
-            formData.append('phone_number', data.phone_number);
+            formData.append('phone_number', 91 + data.phone_number);
             formData.append('footer_title', data.footer_title);
             formData.append('footer_description', data.footer_description);
             formData.append('address', data.address);
@@ -165,6 +168,7 @@ export default function HeaderFooter() {
 
             await updateHeaderFooter(id, formData);
             alert('Data submitted successfully!');
+            navigate(-1);
         } catch (error) {
             console.error('Error:', error);
             alert('Failed to submit data. Please try again.');
@@ -177,15 +181,71 @@ export default function HeaderFooter() {
         return text.trim().toLowerCase() === 'home' ? '/' : `/${formattedText}`;
     };
 
+    const handleChange = (e) => {
+        let value = e.target.value;
+    
+        // Remove non-digit characters
+        value = value.replace(/\D/g, '');
+    
+        // Limit to 10 digits
+        if (value.length > 10) {
+            value = value.slice(0, 10);
+        }
+    
+        // Check if the value starts with zero
+        if (value.length > 0 && value.startsWith('0')) {
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: 'Phone number should not start with 0.' }));
+        } else {
+            // Clear error if phone number is valid
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: '' }));
+        }
+    
+        setPhoneNumber(value);
+    };
+    
+    const handleBlur = () => {
+        // Ensure the phone number has exactly 10 digits and does not start with zero
+        if (phoneNumber.length < 10) {
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: 'Phone number must be exactly 10 digits.' }));
+            setPhoneNumber('');
+        } else if (phoneNumber.startsWith('0')) {
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: 'Phone number should not start with 0.' }));
+            setPhoneNumber('');
+        } else {
+            // Clear error if phone number is valid
+            setErrors((prevErrors) => ({ ...prevErrors, phoneNumber: '' }));
+        }
+    };
+    
+
+    const handleBack = () => {
+       navigate(-1) // Navigate to the previous page
+    };
+
     return (
         <>
             <Sidebar />
             <div className="container mt-5">
+                
                 <div className="row">
+                    
                     <div className="col-lg-12">
+                    
+                        
                         <div className="card shadow-sm">
+                            
                             <div className="card-body">
+                                <div className="d-flex justify-content-end mb-3">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={handleBack}
+                                    >
+                                        Back
+                                    </button>
+                                </div>
                                 <h2 className="card-title mb-4">Header & Footer Settings</h2>
+                                
 
                                 <div className="mb-4">
                                     <h6>Logo:</h6>
@@ -203,47 +263,53 @@ export default function HeaderFooter() {
                                 </div>
 
                                 <div className="mb-4">
-                                    <h6>Header & Footer Buttons:</h6>
-                                    {buttons.map((btn, index) => (
-                                        <div key={index} className="d-flex align-items-center mb-2">
-                                            <div className="form-check me-2">
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-check-input"
-                                                    checked={btn.checked}
-                                                    onChange={() => toggleButtonCheck(index)}
-                                                />
-                                                <label className="form-check-label">Checked</label>
-                                            </div>
-                                            <input
-                                                type="text"
-                                                className="form-control me-2"
-                                                placeholder={`Button ${index + 1}`}
-                                                value={btn.text}
-                                                onChange={(e) => updateButton(index, e.target.value)}
-                                            />
-                                            <span className="ms-2">
-                                                <a href={btn.link} className="text-decoration-none" target="_blank" rel="noopener noreferrer">
-                                                    {btn.link}
-                                                </a>
-                                            </span>
-                                            <button
+                                    <h6 className="mb-3">Header & Footer Buttons:</h6>
+                                    <div className="card p-3">
+                                        <div className="list-group">
+                                            {buttons.map((btn, index) => (
+                                                <div key={index} className="list-group-item d-flex align-items-center justify-content-between mb-2">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="form-check me-3">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-check-input"
+                                                                checked={btn.checked}
+                                                                onChange={() => toggleButtonCheck(index)}
+                                                            />
+                                                            
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control me-3"
+                                                            placeholder={`Button ${index + 1}`}
+                                                            value={btn.text}
+                                                            onChange={(e) => updateButton(index, e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <a href={btn.link} className="text-primary text-decoration-none" target="_blank" rel="noopener noreferrer">
+                                                        {btn.link || 'No Link'}
+                                                    </a>
+                                                       {/* <button
                                                 type="button"
                                                 className="btn btn-danger ms-2"
                                                 onClick={() => handleButtonRemove(index)}
                                             >
                                                 Remove
-                                            </button>
+                                            </button> */}
+                                                </div>
+                                                
+                                            ))}
                                         </div>
-                                    ))}
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary mt-2"
-                                        onClick={addButton}
-                                    >
-                                        Add More Buttons
-                                    </button>
+                                        {/* <button
+                                            type="button"
+                                            className="btn btn-secondary mt-3"
+                                            onClick={addButton}
+                                        >
+                                            Add More Buttons
+                                        </button> */}
+                                    </div>
                                 </div>
+
 
                                 <div className="mb-4">
                                     <label htmlFor="phoneNumber" className="form-label"><h6>Phone Number:</h6></label>
@@ -252,8 +318,14 @@ export default function HeaderFooter() {
                                         id="phoneNumber"
                                         className="form-control"
                                         value={phoneNumber}
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        maxLength={10}
+                                        placeholder="Enter 10-digit phone number"
                                     />
+                                    {phoneNumber.length === 10 ? null : (
+                                        <div className="text-danger">Please enter a valid 10-digit phone number.</div>
+                                    )}
                                 </div>
 
                                 <div className="mb-4">
@@ -315,7 +387,7 @@ export default function HeaderFooter() {
 
                                 <button
                                     type="button"
-                                    className="btn btn-success"
+                                    className="main_bt"
                                     onClick={handleSubmit}
                                 >
                                     Submit

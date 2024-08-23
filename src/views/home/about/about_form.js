@@ -11,6 +11,7 @@ const useAboutForm = (id) => {
     const [editorHtml, setEditorHtml] = useState('');
     const [image, setImage] = useState(null); // For new image upload
     const [imageUrl, setImageUrl] = useState(''); // For displaying existing image
+    const [previewUrl, setPreviewUrl] = useState(''); // For new image preview
     const [loading, setLoading] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
     
@@ -30,6 +31,16 @@ const useAboutForm = (id) => {
                 .catch(console.error);
         }
     }, [id]);
+
+    useEffect(() => {
+        if (image) {
+            const objectUrl = URL.createObjectURL(image);
+            setPreviewUrl(objectUrl);
+
+            // Clean up the object URL after the component unmounts
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+    }, [image]);
 
     const validateForm = () => {
         const errors = {};
@@ -150,6 +161,7 @@ const useAboutForm = (id) => {
         validationErrors,
         loading,
         imageUrl, // Expose the imageUrl
+        previewUrl, // Expose the previewUrl
         handleInputChange,
         handleEditorChange,
         handleSubmit
