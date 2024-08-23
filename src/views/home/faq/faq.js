@@ -75,8 +75,15 @@ export default function FAQ() {
 
     const handleDeleteFAQ = async (id) => {
         try {
-            await deleteFaq(id);
-            fetchFAQsData();  // Refresh FAQs after delete
+            const result = await deleteFaq(id);
+            if (result.success) {
+                alert('Faq deleted successfully');
+                fetchFAQsData();
+                
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+              // Refresh FAQs after delete
         } catch (error) {
             console.error('Error deleting FAQ:', error);
         }

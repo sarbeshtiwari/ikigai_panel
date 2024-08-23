@@ -94,6 +94,13 @@ const OurTeam = () => {
     };
 
     const handleDeleteTeam = async (id) => {
+         // Show a confirmation dialog to the user
+         const isConfirmed = window.confirm('Are you sure you want to delete this Data?');
+    
+         if (!isConfirmed) {
+             // If the user cancels, exit the function
+             return;
+         }
         try {
             const result = await deleteOurTeam(id);
             if (result.success) {

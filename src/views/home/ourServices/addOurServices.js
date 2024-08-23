@@ -16,7 +16,8 @@ const AddOurServices = () => {
         handleEditorChange,
         handleSubmit,
         imagePreview,
-        homeImagePreview
+        homeImagePreview,
+        loading // Get loading state
     } = useServicesForm(id);
 
     return (
@@ -108,16 +109,22 @@ const AddOurServices = () => {
                                                         onChange={handleEditorChange}
                                                         modules={AddOurServices.modules}
                                                         formats={AddOurServices.formats}
-                                                        style={{ height: '300px', marginBottom: '100px' }}  // Add margin-bottom to create space
+                                                        style={{ height: '300px', marginBottom: '100px' }}
                                                     />
-
                                                     {validationErrors.description && (
                                                         <div className="invalid-feedback">{validationErrors.description}</div>
                                                     )}
                                                 </div>
+
                                             </div>
                                             <div className="form-group margin_0">
-                                                <button className="main_bt" type="submit">{id === 'add' ? 'Submit' : 'Update'}</button>
+                                                <button 
+                                                    className="main_bt"
+                                                    type="submit"
+                                                    disabled={loading} // Disable button when loading
+                                                >
+                                                    {loading ? 'Submitting...' : (id === 'add' ? 'Submit' : 'Update')} 
+                                                </button>
                                             </div>
                                         </form>
                                     </div>

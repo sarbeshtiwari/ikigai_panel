@@ -81,6 +81,7 @@ const useServicesForm = (id) => {
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
+    
 
     const isValidImage = async (file) => {
         const allowedTypes = ["image/png", "image/webp", "image/jpeg", "image/svg+xml"];
@@ -143,8 +144,8 @@ const useServicesForm = (id) => {
         }
 
         const formDataToSend = new FormData();
-        formDataToSend.append('heading', formData.heading || ' ');
-        formDataToSend.append('home_data', formData.home_data || ' ');
+        formDataToSend.append('heading', formData.heading);
+        formDataToSend.append('home_data', formData.home_data);
         formDataToSend.append('description', editorHtml);
         if (image) {
             formDataToSend.append('image_path', image);

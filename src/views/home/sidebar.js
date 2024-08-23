@@ -1,16 +1,17 @@
 //test mode
 //light mode
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Button, Offcanvas } from 'react-bootstrap';
+import Cookies from 'js-cookie';
 import logo from '../../assets/images/logo.png';
 
 export default function Sidebar() {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showOther, setShowOther] = useState(false);
     const [showEnquiry, setShowEnquiry] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+    const [warningMessage, setWarningMessage] = useState('');
 
     const location = useLocation();
 
@@ -19,29 +20,23 @@ export default function Sidebar() {
     const toggleEnquiry = () => setShowEnquiry(!showEnquiry);
 
     useEffect(() => {
-        const checkTokenExpiry = () => {
-            const expiryTime = window.localStorage.getItem('expiryTime');
-          
-            if (expiryTime) {
-                const expiryTimestamp = parseInt(expiryTime, 10);
-                
-                if (!isNaN(expiryTimestamp)) {
-                    const currentTime = Date.now();
-                    const timeRemaining = Math.max(0, Math.floor((expiryTimestamp - currentTime) / 1000));
-                    setTimeLeft(timeRemaining);
-                    if (timeRemaining <= 0) {
-                        localStorage.removeItem('authToken');
-                        localStorage.removeItem('expiryTime');
-                        window.location.href = '/';
-                    }
+        // Timer for session logout
+        const countdown = setInterval(() => {
+            setTimeLeft(prevTime => {
+                if (prevTime <= 0) {
+                    clearInterval(countdown);
+                    alert('Your session has ended.');
+                    handleLogout();
+                    return 0;
                 }
-            }
-        };
+                if (prevTime <= 120) {
+                    setWarningMessage('Your session will expire shortly!');
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
 
-        checkTokenExpiry(); // Check immediately
-        const interval = setInterval(checkTokenExpiry, 1000); // Update every second
-
-        return () => clearInterval(interval); // Cleanup interval on component unmount
+        return () => clearInterval(countdown);
     }, []);
 
     useEffect(() => {
@@ -61,9 +56,9 @@ export default function Sidebar() {
     };
 
     const handleLogout = () => {
-        window.localStorage.removeItem('authToken');
-        window.localStorage.removeItem('expiryTime');
-        window.location.href = '/';
+        Cookies.remove('authToken');
+        Cookies.remove('expiryTime');
+        window.location.href = '/ikigaiWellness/#/login';
     };
 
     return (
@@ -166,7 +161,7 @@ export default function Sidebar() {
                          }}>
                             FAQs
                         </Nav.Link>
-                        
+
                         <Nav.Item>
                             <Nav.Link 
                                 onClick={toggleOther}
@@ -222,15 +217,18 @@ export default function Sidebar() {
                         </Nav.Item>
                     </Nav>
                 </Offcanvas.Body>
-                {timeLeft !== null && (
-                    <div className="mt-3 text-center">
-                        <span className="text-danger">Session expires in: {formatTime(timeLeft)}</span>
-                    </div>
-                )}
+                <div className="mt-3 text-center">
+                    <span className="text-danger">
+                        {warningMessage && <p>{warningMessage}</p>}
+                        Session expires in: {formatTime(timeLeft)}
+                    </span>
+                </div>
             </Offcanvas>
         </>
     );
 }
+
+
 
 
 //dark mode

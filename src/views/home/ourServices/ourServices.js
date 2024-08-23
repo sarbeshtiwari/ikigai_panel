@@ -165,10 +165,17 @@ const OurServices = () => {
     };
 
     const handleDeleteService = async (id) => {
+        // Show a confirmation dialog to the user
+        const isConfirmed = window.confirm('Are you sure you want to delete this Service?');
+    
+        if (!isConfirmed) {
+            // If the user cancels, exit the function
+            return;
+        }
         try {
             const result = await deleteOurServices(id);
             if (result.success) {
-                alert('Our Services deleted successfully');
+                alert('Service deleted successfully');
                 setServices(prevservices => prevservices.filter(services => services.id !== id));
             } else {
                 alert(`Error: ${result.message}`);

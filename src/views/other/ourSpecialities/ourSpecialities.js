@@ -78,6 +78,7 @@ export default function Specialities() {
     };
 
     const handleDeleteBanner = async (id) => {
+         
         try {
             const result = await deleteBanner(id);
             if (result.success) {
@@ -97,11 +98,11 @@ export default function Specialities() {
         try {
             const response = await updateOurSpecialityStatus(id, status);
             if (response.success) {
-                console.log('specialitie status updated successfully!');
+                console.log('speciality status updated successfully!');
         //         setSpecialities(prevspecialities => prevspecialities.map(specialitie => specialitie._id === id ? { ...specialitie, status } : specialitie));
             loadspecialities();
             } else {
-                console.error('Error updating specialitie status:', response.message);
+                console.error('Error updating Speciality status:', response.message);
             }
         } catch (error) {
             console.error('Unexpected error:', error);
@@ -109,6 +110,7 @@ export default function Specialities() {
     };
 
     const handleDeleteSpeciality = async (id) => {
+   
         try {
             const result = await deleteOurSpeciality(id);
             if (result.success) {
@@ -283,7 +285,7 @@ export default function Specialities() {
                                                                                 <button
                                                                                     className="btn btn-danger btn-xs"
                                                                                     onClick={() => {
-                                                                                        if (window.confirm('Are you sure you want to delete this specialitie?')) {
+                                                                                        if (window.confirm('Are you sure you want to delete this speciality?')) {
                                                                                             handleDeleteSpeciality(speciality.id);
                                                                                         }
                                                                                     }}

@@ -112,8 +112,15 @@ export default function Testimonial() {
 
     const handleDeleteTestimonial = async (id) => {
         try {
-            await deleteTestimonials(id);
-            setTestimonial(prevTestimonial => prevTestimonial.filter(Testimonial => Testimonial.id !== id));
+            const result = await deleteTestimonials(id);
+            if (result.success) {
+                alert('Testimonial deleted successfully');
+                setTestimonial(prevTestimonial => prevTestimonial.filter(Testimonial => Testimonial.id !== id));
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+            
+            
         } catch (error) {
             console.error('Error deleting Testimonial:', error);
         }

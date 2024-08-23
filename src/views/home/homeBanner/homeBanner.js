@@ -59,7 +59,7 @@ export default function HomeBanner() {
         try {
             const result = await deleteHomeBanner(id);
             if (result.success) {
-            
+                alert('Banner deleted successfully');
                 setHomeBanner(prevHomeBanner => prevHomeBanner.filter(homeBanner => homeBanner.id !== id));
             } else {
                 alert(`Error: ${result.message}`);
