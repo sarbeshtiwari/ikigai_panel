@@ -73,8 +73,9 @@ const useServicesForm = (id) => {
         if (!formData.home_data.trim()) {
             errors.home_data = 'Home data is required';
         }
-        if (!editorHtml.trim()) {
+        if (!editorHtml) {
             errors.description = 'Description is required';
+            
         }
         if (!image && !imagePreview) errors.image = 'Image is required';
         if (!homeImage && !homeImagePreview) errors.home_image = 'Image is required';

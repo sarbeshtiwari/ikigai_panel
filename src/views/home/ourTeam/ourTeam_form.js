@@ -39,7 +39,8 @@ const useTeamForm = (id) => {
         if (!formData.name) errors.name = 'Name is required';
         if (!formData.designation) errors.designation = 'Designation is required';
         if (!editorHtml) errors.description = 'Description is required';
-
+        if (id === 'add' && !image) errors.image = 'Image is required';
+        if (id !== 'add' && !image && !imagePreview) errors.image = 'Image is required';
         return errors;
     };
 

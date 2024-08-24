@@ -112,7 +112,7 @@ const AddOurServices = () => {
                                                         style={{ height: '300px', marginBottom: '100px' }}
                                                     />
                                                     {validationErrors.description && (
-                                                        <div className="invalid-feedback">{validationErrors.description}</div>
+                                                        <div className="invalid-feedback d-block">{validationErrors.description}</div>
                                                     )}
                                                 </div>
 

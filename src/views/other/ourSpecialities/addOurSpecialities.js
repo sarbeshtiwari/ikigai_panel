@@ -107,6 +107,8 @@ export default function AddSpecialities() {
         const errors = {};
         if (!formData.heading) errors.heading = 'Heading is required';
         if (!formData.content) errors.content = 'Content is required';
+        if (id === 'add' && !selectedImage) errors.image = 'Image is required';
+        if (id !== 'add' && !image && !selectedImage) errors.image = 'Image is required';
         return errors;
     };
 
@@ -243,7 +245,7 @@ export default function AddSpecialities() {
                                                         type="submit"
                                                         disabled={isSubmitting}
                                                     >
-                                                        {id === 'add' ? 'Submit' : 'Update'}
+                                                        {isSubmitting ? 'Submitting...' : (id === 'add' ? 'Submit' : 'Update')}
                                                     </button>
                                                 </div>
                                             </form>

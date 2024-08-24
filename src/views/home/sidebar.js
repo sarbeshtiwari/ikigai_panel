@@ -73,15 +73,15 @@ export default function Sidebar() {
                 >
                     {showSidebar ? '' : <i className='fa fa-bars fa-2x'></i>}
                 </Button>
-                <Navbar.Collapse id="basic-navbar-nav">
+                 {/* <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto">
-                        <NavDropdown title="Welcome" id="basic-nav-dropdown">
+                        <NavDropdown title="Welcome" id="">
                             <NavDropdown.Item onClick={handleLogout}>
                                 Log Out
                             </NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
-                </Navbar.Collapse>
+                </Navbar.Collapse> */}
             </Navbar>
 
             <Offcanvas show={showSidebar} onHide={toggleSidebar} className="bg-light p-4">
@@ -217,7 +217,15 @@ export default function Sidebar() {
                         </Nav.Item>
                     </Nav>
                 </Offcanvas.Body>
+                
                 <div className="mt-3 text-center">
+                    <Button 
+                        variant="danger" 
+                        onClick={handleLogout}
+                        className="mb-3"
+                    >
+                        Log Out
+                    </Button>
                     <span className="text-danger">
                         {warningMessage && <p>{warningMessage}</p>}
                         Session expires in: {formatTime(timeLeft)}
