@@ -1,14 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const PrivateRoute = ({ element: Component, ...rest }) => {
-    const token = localStorage.getItem('authToken');
-    const expiryTime = localStorage.getItem('expiryTime');
+    const token = Cookies.get('authToken');
+    const expiryTime = Cookies.get('expiryTime');
     const isTokenExpired = !token || Date.now() > expiryTime;
 
     if (isTokenExpired) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('expiryTime');
+        Cookies.remove('authToken');
+        Cookies.remove('expiryTime');
         return <Navigate to="/login" replace />;
     }
 

@@ -1,7 +1,7 @@
 //test mode
 //light mode
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Button, Offcanvas } from 'react-bootstrap';
 import Cookies from 'js-cookie';
 import logo from '../../assets/images/logo.png';
@@ -14,6 +14,7 @@ export default function Sidebar() {
     const [warningMessage, setWarningMessage] = useState('');
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     const toggleSidebar = () => setShowSidebar(!showSidebar);
     const toggleOther = () => setShowOther(!showOther);
@@ -56,9 +57,10 @@ export default function Sidebar() {
     };
 
     const handleLogout = () => {
+        
         Cookies.remove('authToken');
         Cookies.remove('expiryTime');
-        window.location.href = '/ikigaiWellness/#/login';
+        navigate('/', {replace: true});
     };
 
     return (
