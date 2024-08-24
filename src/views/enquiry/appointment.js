@@ -134,7 +134,7 @@ const Appointment = () => {
                                     <div className="row">
                                         <div className="col-lg-12">
                                             <div className="table-responsive-sm">
-                                                <table border="0" cellSpacing="5" cellPadding="5">
+                                                {/* <table border="0" cellSpacing="5" cellPadding="5">
                                                     <tbody>
                                                         <tr>
                                                             <td>Created at:</td>
@@ -145,7 +145,7 @@ const Appointment = () => {
                                                             <td><input type="date" id="max" name="max" /></td>
                                                         </tr>
                                                     </tbody>
-                                                </table>
+                                                </table> */}
                                                 <div id="pjdataTable_wrapper" className="dataTables_wrapper no-footer">
                                                     <div className="dt-buttons">
                                                         <button 
@@ -180,9 +180,9 @@ const Appointment = () => {
                                                     {loading && <div className="loading">Loading...</div>}
                                                     {error && <div className="alert alert-danger">{error}</div>}
 
-                                                    <div id="pjdataTable_filter" className="dataTables_filter">
+                                                    {/* <div id="pjdataTable_filter" className="dataTables_filter">
                                                         <label>Search:<input type="search" placeholder="" aria-controls="pjdataTable" /></label>
-                                                    </div>
+                                                    </div> */}
                                                     <table id="pjdataTable" className="table table-striped projects display dataTable no-footer" style={{ width: '100%' }}>
                                                         <thead className="thead-dark">
                                                             <tr>
@@ -205,7 +205,7 @@ const Appointment = () => {
                                                                     <td>{item.phoneNumber}</td>
                                                                    
                                                                     <td>{item.created_at}</td>
-                                                                    <td>{item.note}</td>
+                                                                    <td>{item.note ? item.note.slice(0,20) : item.note}</td>
                                                                     <td>
                                                                         <ul className="list-inline d-flex justify-content">
                                                                             <li>
