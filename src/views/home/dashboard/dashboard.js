@@ -66,7 +66,7 @@ const Dashboard = () => {
                     <div className="col-md-4">
                         <div className="card text-center bg-primary text-white">
                             <div className="card-body">
-                                <h3 className="my-3">500</h3>
+                                <h3 className="my-3">0</h3>
                                 <i className="fas fa-users fa-3x mb-3"></i>
                                 <p className="text-dark">Total Visitors</p>
                             </div>

@@ -14,6 +14,8 @@ const Query = () => {
     const [noteText, setNoteText] = useState(''); // Track the note text
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    // const [searchQuery, setSearchQuery] = useState('');
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,6 +23,16 @@ const Query = () => {
         };
         fetchData();
     }, []); // Empty dependency array to fetch data only once on component mount
+
+    
+  // Filter data based on the search query
+//   const filteredLuxury = data.filter(item =>
+//     item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item.Email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item.Mobile.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item.Project_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//     item.Query.toLowerCase().includes(searchQuery.toLowerCase())
+//   );
 
     const fetchUserQuery = async () => {
         try {
@@ -179,9 +191,9 @@ const Query = () => {
                                                     {loading && <div className="loading">Loading...</div>}
                                                     {error && <div className="alert alert-danger">{error}</div>}
 
-                                                    {/* <div id="pjdataTable_filter" className="dataTables_filter">
+                                                    <div id="pjdataTable_filter" className="dataTables_filter">
                                                         <label>Search:<input type="search" placeholder="" aria-controls="pjdataTable" /></label>
-                                                    </div> */}
+                                                    </div>
                                                     <table id="pjdataTable" className="table table-striped projects display dataTable no-footer" style={{ width: '100%' }}>
                                                         <thead className="thead-dark">
                                                             <tr>

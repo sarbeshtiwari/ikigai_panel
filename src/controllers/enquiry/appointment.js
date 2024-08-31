@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/appointment';
+const API_URL = 'https://ecis.in/apis/ikigai-wellness-API/appointment';
 
 export const fetchAppointment = async () => {
     try {

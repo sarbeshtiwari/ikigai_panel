@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/blog';
+const API_URL = 'https://ecis.in/apis/ikigai-wellness-API/blog';
 // const API_URL = 'http://localhost:1000/blog';
 
 export const fetchBlogs = async () => {

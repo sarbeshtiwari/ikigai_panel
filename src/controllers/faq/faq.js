@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/faq';
+const API_URL = 'https://ecis.in/apis/ikigai-wellness-API/faq';
 
 export const fetchFaq = async () => {
     try {

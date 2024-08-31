@@ -1,5 +1,5 @@
 // src/App.js
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from "./views/login/login";
 import Dashboard from "./views/home/dashboard/dashboard";
 import AboutUs from "./views/home/about/about";
@@ -29,7 +29,7 @@ import HeaderFooter from './views/widgets/header_footer';
 
 function App() {
   return (
-    <HashRouter hash={false}>
+    <BrowserRouter basename="/ikigaiWellness">
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -59,7 +59,7 @@ function App() {
         <Route path="/appointment" element={<PrivateRoute element={<Appointment />} />} />
         <Route path="/headerFooter" element={<PrivateRoute element={<HeaderFooter />} />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

@@ -80,7 +80,7 @@ const AddFAQ = () => {
         console.log('Submitting data:', headings);
         const dataToSend = id !== 'add' ? headings[0] : headings;
         try {
-            const apiEndpoint = id !== 'add' ? `https://ikigai-panel-api.onrender.com/faq/updateFaq/${id}` : 'https://ikigai-panel-api.onrender.com/faq/addFaq';
+            const apiEndpoint = id !== 'add' ? `https://ecis.in/apis/ikigai-wellness-API/faq/updateFaq/${id}` : 'https://ecis.in/apis/ikigai-wellness-API/faq/addFaq';
             const method = id !== 'add' ? 'put' : 'post';
             const response = await axios({
                 method,

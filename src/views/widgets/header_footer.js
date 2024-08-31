@@ -257,7 +257,7 @@ export default function HeaderFooter() {
                                         onChange={handleLogoChange}
                                     />
                                     {logoPreview && (
-                                        <img src={logoPreview} alt="Logo Preview" className="img-fluid mt-3" style={{ maxHeight: '150px', objectFit: 'contain' }} />
+                                        <img src={logoPreview} alt="Logo Preview" className="img-fluid mt-3" style={{ maxHeight: '50px', objectFit: 'contain' }} />
                                     )}
                                     {errors.logo && <div className="text-danger mt-2">{errors.logo}</div>}
                                 </div>

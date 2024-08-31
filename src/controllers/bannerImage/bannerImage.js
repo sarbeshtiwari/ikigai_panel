@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/bannerImage';
+const API_URL = 'https://ecis.in/apis/ikigai-wellness-API/bannerImage';
 
 export const deleteBanner = async (id) => {
     try {

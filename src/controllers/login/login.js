@@ -2,7 +2,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = 'https://ikigai-panel-api.onrender.com/auth';
+const API_URL = 'https://ecis.in/apis/ikigai-wellness-API/auth';
 
 // export const loginUser = async (username, password) => {
 //     try {
